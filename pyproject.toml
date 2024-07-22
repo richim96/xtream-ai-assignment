@@ -5,10 +5,12 @@ description = "Automated pipeline for model training, and REST API for serving p
 authors = [
     {name = "Riccardo Mei"},
 ]
-dependencies = []
+dependencies = [
+    "pandas>=2.2.2",
+    "requests>=2.32.3",
+]
 requires-python = ">=3.12"
 readme = "README.md"
-license = {text = "MIT"}
 
 [build-system]
 requires = ["pdm-backend"]
@@ -17,3 +19,11 @@ build-backend = "pdm.backend"
 
 [tool.pdm]
 distribution = true
+
+[tool.commitizen]
+name = "cz_conventional_commits"
+tag_format = "$version"
+version_scheme = "pep440"
+version_provider = "pep621"
+update_changelog_on_bump = true
+major_version_zero = true

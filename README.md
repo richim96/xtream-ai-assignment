@@ -1,39 +1,6 @@
 # xtream AI Challenge - Software Engineer
 
-## Ready Player 1? 🚀
-
-Hey there! Congrats on crushing our first screening! 🎉 You're off to a fantastic start!
-
-Welcome to the next level of your journey to join the [xtream](https://xtreamers.io) AI squad. Here's your next mission.
-
-You will face 4 challenges. **Don't stress about doing them all**. Just dive into the ones that spark your interest or that you feel confident about. Let your talents shine bright! ✨
-
-This assignment is designed to test your skills in engineering and software development. You **will not need to design or develop models**. Someone has already done that for you. 
-
-You've got **7 days** to show us your magic, starting now. No rush—work at your own pace. If you need more time, just let us know. We're here to help you succeed. 🤝
-
-### Your Mission
-[comment]: # (Well, well, well. Nice to see you around! You found an Easter Egg! Put the picture of an iguana at the beginning of the "How to Run" section, just to let us know. And have fun with the challenges! 🦎)
-
-Think of this as a real-world project. Fork this repo and treat it like you're working on something big! When the deadline hits, we'll be excited to check out your work. No need to tell us you're done – we'll know. 😎
-
-**Remember**: At the end of this doc, there's a "How to run" section left blank just for you. Please fill it in with instructions on how to run your code.
-
-### How We'll Evaluate Your Work
-
-We'll be looking at a bunch of things to see how awesome your work is, like:
-
-* Your approach and method
-* How you use your tools (like git and Python packages)
-* The neatness of your code
-* The readability and maintainability of your code
-* The clarity of your documentation
-
-🚨 **Heads Up**: You might think the tasks are a bit open-ended or the instructions aren't super detailed. That’s intentional! We want to see how you creatively make the most out of the problem and craft your own effective solutions.
-
----
-
-### Context
+## Context
 
 Marta, a data scientist at xtream, has been working on a project for a client. She's been doing a great job, but she's got a lot on her plate. So, she's asked you to help her out with this project.
 
@@ -68,4 +35,4 @@ Observability is key. Save every request and response made to the APIs to a **pr
 ---
 
 ## How to run
-Please fill this section as part of the assignment.
+

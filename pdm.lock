@@ -5,7 +5,7 @@
 groups = ["default"]
 strategy = ["inherit_metadata"]
 lock_version = "4.5.0"
-content_hash = "sha256:00f2dcf2f7114f715cf1130c1dc3a17e77918a8624dfb4bcda58f554c5637b28"
+content_hash = "sha256:d655b8271d1a008347b25be9efe7ece3922200f256f1b3d8dde479e94ed05513"
 
 [[metadata.targets]]
 requires_python = ">=3.12"
@@ -101,6 +101,21 @@ files = [
     {file = "pandas-2.2.2-cp312-cp312-musllinux_1_1_x86_64.whl", hash = "sha256:43498c0bdb43d55cb162cdc8c06fac328ccb5d2eabe3cadeb3529ae6f0517c32"},
     {file = "pandas-2.2.2-cp312-cp312-win_amd64.whl", hash = "sha256:d187d355ecec3629624fccb01d104da7d7f391db0311145817525281e2804d23"},
     {file = "pandas-2.2.2.tar.gz", hash = "sha256:9e79019aba43cb4fda9e4d983f8e88ca0373adbb697ae9c6c43093218de28b54"},
+]
+
+[[package]]
+name = "polars"
+version = "1.2.1"
+requires_python = ">=3.8"
+summary = "Blazingly fast DataFrame library"
+groups = ["default"]
+files = [
+    {file = "polars-1.2.1-cp38-abi3-macosx_10_12_x86_64.whl", hash = "sha256:baa5d1f032d7b82075cf926d40a4c6d74dd897cae9fa529f6bc1f68608db53e0"},
+    {file = "polars-1.2.1-cp38-abi3-macosx_11_0_arm64.whl", hash = "sha256:a113fe7e378044c621be329bedfaa19cb0d7fff4bb05642dc91bb9413e662b8f"},
+    {file = "polars-1.2.1-cp38-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:2094877da694bb59bfb7f5af50471955012b950068dc6f3ef5ecc41653a3b04f"},
+    {file = "polars-1.2.1-cp38-abi3-manylinux_2_24_aarch64.whl", hash = "sha256:d71f87f7ef9f4f4a1d52127399b1dae4a2622d528eea90f94912d92e0e9e3998"},
+    {file = "polars-1.2.1-cp38-abi3-win_amd64.whl", hash = "sha256:764c2701b8ca8a27dcd7f23c94ba9031aec4d392061dfa7d1c2fdcbfd132d6ba"},
+    {file = "polars-1.2.1.tar.gz", hash = "sha256:a46aba51acce7ecf85151f72d25ef2a3eeb5735d55f4b7cc69ec4a596e9fbefd"},
 ]
 
 [[package]]

@@ -6,8 +6,9 @@ authors = [
     {name = "Riccardo Mei"},
 ]
 dependencies = [
-    "pandas>=2.2.2",
     "requests>=2.32.3",
+    "pandas>=2.2.2",
+    "polars>=1.2.1",
 ]
 requires-python = ">=3.12"
 readme = "README.md"

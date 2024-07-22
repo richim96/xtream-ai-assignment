@@ -1,3 +1,9 @@
+## 0.2.1 (2024-07-23)
+
+### Refactor
+
+- **repo**: reorganize project structure
+
 ## 0.2.0 (2024-07-22)
 
 ### Feat

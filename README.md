@@ -58,6 +58,6 @@ curl -sSL https://pdm-project.org/install-pdm.py | python3 -
 pdm install
 ```
 
-### Automated pipeline
+### Training pipeline
 
 ### REST API

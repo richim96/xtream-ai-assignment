@@ -1,4 +1,4 @@
-## Unreleased
+## 0.2.0 (2024-07-22)
 
 ### Feat
 
@@ -7,3 +7,7 @@
 - add notebook
 - add data
 - add README.md with challenge instructions
+
+### Refactor
+
+- restructure directory tree

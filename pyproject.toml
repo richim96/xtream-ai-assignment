@@ -1,6 +1,6 @@
 [project]
 name = "diamonds"
-version = "0.1.0"
+version = "0.2.0"
 description = "Automated pipeline for model training and REST API for serving predictions on diamond data."
 authors = [
     {name = "Riccardo Mei"},

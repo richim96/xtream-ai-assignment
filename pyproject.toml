@@ -1,25 +1,30 @@
+# Project #
 [project]
 name = "diamonds"
 version = "0.2.1"
-description = "Automated pipeline for model training and REST API for serving predictions on diamond data."
+description = "Automated ML pipeline and REST API for model serving."
 authors = [
-    {name = "Riccardo Mei"},
+    {name = "Riccardo Mei"}, {email = "-"}
 ]
 dependencies = [
     "requests>=2.32.3",
     "pandas>=2.2.2",
     "polars>=1.2.1",
+    "pytest>=8.3.1",
+    "black>=24.4.2",
 ]
 requires-python = ">=3.12"
 readme = "README.md"
 
-[build-system]
-requires = ["pdm-backend"]
-build-backend = "pdm.backend"
+# Tools #
+[tool.pdm.build]
+excludes = ["**/.DS_Store"]
+package-dir = "src"
+source-includes = ["tests", "CHANGELOG.md", "README.md"]
 
-
-[tool.pdm]
-distribution = true
+[tool.pdm.version]
+source = "file"
+path = "src/diamonds/__init__.py"
 
 [tool.commitizen]
 name = "cz_conventional_commits"
@@ -28,3 +33,14 @@ version_scheme = "pep440"
 version_provider = "pep621"
 update_changelog_on_bump = true
 major_version_zero = true
+
+[tool.pytest.ini_options]
+minversion = "6.0"
+testpaths = [
+	"tests",
+]
+
+# Build #
+[build-system]
+requires = ["pdm-backend"]
+build-backend = "pdm.backend"

@@ -5,10 +5,34 @@
 groups = ["default"]
 strategy = ["inherit_metadata"]
 lock_version = "4.5.0"
-content_hash = "sha256:d655b8271d1a008347b25be9efe7ece3922200f256f1b3d8dde479e94ed05513"
+content_hash = "sha256:7902d58410ef0cd4d5cee563b1d0c7e9d51ec194fde631af03b268841978cb9d"
 
 [[metadata.targets]]
 requires_python = ">=3.12"
+
+[[package]]
+name = "black"
+version = "24.4.2"
+requires_python = ">=3.8"
+summary = "The uncompromising code formatter."
+groups = ["default"]
+dependencies = [
+    "click>=8.0.0",
+    "mypy-extensions>=0.4.3",
+    "packaging>=22.0",
+    "pathspec>=0.9.0",
+    "platformdirs>=2",
+    "tomli>=1.1.0; python_version < \"3.11\"",
+    "typing-extensions>=4.0.1; python_version < \"3.11\"",
+]
+files = [
+    {file = "black-24.4.2-cp312-cp312-macosx_10_9_x86_64.whl", hash = "sha256:accf49e151c8ed2c0cdc528691838afd217c50412534e876a19270fea1e28e2d"},
+    {file = "black-24.4.2-cp312-cp312-macosx_11_0_arm64.whl", hash = "sha256:88c57dc656038f1ab9f92b3eb5335ee9b021412feaa46330d5eba4e51fe49b04"},
+    {file = "black-24.4.2-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:be8bef99eb46d5021bf053114442914baeb3649a89dc5f3a555c88737e5e98fc"},
+    {file = "black-24.4.2-cp312-cp312-win_amd64.whl", hash = "sha256:415e686e87dbbe6f4cd5ef0fbf764af7b89f9057b97c908742b6008cc554b9c0"},
+    {file = "black-24.4.2-py3-none-any.whl", hash = "sha256:d36ed1124bb81b32f8614555b34cc4259c3fbc7eec17870e8ff8ded335b58d8c"},
+    {file = "black-24.4.2.tar.gz", hash = "sha256:c872b53057f000085da66a19c55d68f6f8ddcac2642392ad3a355878406fbd4d"},
+]
 
 [[package]]
 name = "certifi"
@@ -48,6 +72,33 @@ files = [
 ]
 
 [[package]]
+name = "click"
+version = "8.1.7"
+requires_python = ">=3.7"
+summary = "Composable command line interface toolkit"
+groups = ["default"]
+dependencies = [
+    "colorama; platform_system == \"Windows\"",
+    "importlib-metadata; python_version < \"3.8\"",
+]
+files = [
+    {file = "click-8.1.7-py3-none-any.whl", hash = "sha256:ae74fb96c20a0277a1d615f1e4d73c8414f5a98db8b799a7931d1582f3390c28"},
+    {file = "click-8.1.7.tar.gz", hash = "sha256:ca9853ad459e787e2192211578cc907e7594e294c7ccc834310722b41b9ca6de"},
+]
+
+[[package]]
+name = "colorama"
+version = "0.4.6"
+requires_python = "!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*,!=3.5.*,!=3.6.*,>=2.7"
+summary = "Cross-platform colored terminal text."
+groups = ["default"]
+marker = "sys_platform == \"win32\" or platform_system == \"Windows\""
+files = [
+    {file = "colorama-0.4.6-py2.py3-none-any.whl", hash = "sha256:4f1d9991f5acc0ca119f9d443620b77f9d6b33703e51011c16baf57afb285fc6"},
+    {file = "colorama-0.4.6.tar.gz", hash = "sha256:08695f5cb7ed6e0531a20572697297273c47b8cae5a63ffc6d6ed5c201be6e44"},
+]
+
+[[package]]
 name = "idna"
 version = "3.7"
 requires_python = ">=3.5"
@@ -56,6 +107,28 @@ groups = ["default"]
 files = [
     {file = "idna-3.7-py3-none-any.whl", hash = "sha256:82fee1fc78add43492d3a1898bfa6d8a904cc97d8427f683ed8e798d07761aa0"},
     {file = "idna-3.7.tar.gz", hash = "sha256:028ff3aadf0609c1fd278d8ea3089299412a7a8b9bd005dd08b9f8285bcb5cfc"},
+]
+
+[[package]]
+name = "iniconfig"
+version = "2.0.0"
+requires_python = ">=3.7"
+summary = "brain-dead simple config-ini parsing"
+groups = ["default"]
+files = [
+    {file = "iniconfig-2.0.0-py3-none-any.whl", hash = "sha256:b6a85871a79d2e3b22d2d1b94ac2824226a63c6b741c88f7ae975f18b6778374"},
+    {file = "iniconfig-2.0.0.tar.gz", hash = "sha256:2d91e135bf72d31a410b17c16da610a82cb55f6b0477d1a902134b24a455b8b3"},
+]
+
+[[package]]
+name = "mypy-extensions"
+version = "1.0.0"
+requires_python = ">=3.5"
+summary = "Type system extensions for programs checked with the mypy type checker."
+groups = ["default"]
+files = [
+    {file = "mypy_extensions-1.0.0-py3-none-any.whl", hash = "sha256:4392f6c0eb8a5668a69e23d168ffa70f0be9ccfd32b5cc2d26a34ae5b844552d"},
+    {file = "mypy_extensions-1.0.0.tar.gz", hash = "sha256:75dbf8955dc00442a438fc4d0666508a9a97b6bd41aa2f0ffe9d2f2725af0782"},
 ]
 
 [[package]]
@@ -76,6 +149,17 @@ files = [
     {file = "numpy-2.0.1-cp312-cp312-win32.whl", hash = "sha256:173a00b9995f73b79eb0191129f2455f1e34c203f559dd118636858cc452a1bf"},
     {file = "numpy-2.0.1-cp312-cp312-win_amd64.whl", hash = "sha256:bb2124fdc6e62baae159ebcfa368708867eb56806804d005860b6007388df171"},
     {file = "numpy-2.0.1.tar.gz", hash = "sha256:485b87235796410c3519a699cfe1faab097e509e90ebb05dcd098db2ae87e7b3"},
+]
+
+[[package]]
+name = "packaging"
+version = "24.1"
+requires_python = ">=3.8"
+summary = "Core utilities for Python packages"
+groups = ["default"]
+files = [
+    {file = "packaging-24.1-py3-none-any.whl", hash = "sha256:5b8f2217dbdbd2f7f384c41c628544e6d52f2d0f53c6d0c3ea61aa5d1d7ff124"},
+    {file = "packaging-24.1.tar.gz", hash = "sha256:026ed72c8ed3fcce5bf8950572258698927fd1dbda10a5e981cdf0ac37f4f002"},
 ]
 
 [[package]]
@@ -104,6 +188,39 @@ files = [
 ]
 
 [[package]]
+name = "pathspec"
+version = "0.12.1"
+requires_python = ">=3.8"
+summary = "Utility library for gitignore style pattern matching of file paths."
+groups = ["default"]
+files = [
+    {file = "pathspec-0.12.1-py3-none-any.whl", hash = "sha256:a0d503e138a4c123b27490a4f7beda6a01c6f288df0e4a8b79c7eb0dc7b4cc08"},
+    {file = "pathspec-0.12.1.tar.gz", hash = "sha256:a482d51503a1ab33b1c67a6c3813a26953dbdc71c31dacaef9a838c4e29f5712"},
+]
+
+[[package]]
+name = "platformdirs"
+version = "4.2.2"
+requires_python = ">=3.8"
+summary = "A small Python package for determining appropriate platform-specific dirs, e.g. a `user data dir`."
+groups = ["default"]
+files = [
+    {file = "platformdirs-4.2.2-py3-none-any.whl", hash = "sha256:2d7a1657e36a80ea911db832a8a6ece5ee53d8de21edd5cc5879af6530b1bfee"},
+    {file = "platformdirs-4.2.2.tar.gz", hash = "sha256:38b7b51f512eed9e84a22788b4bce1de17c0adb134d6becb09836e37d8654cd3"},
+]
+
+[[package]]
+name = "pluggy"
+version = "1.5.0"
+requires_python = ">=3.8"
+summary = "plugin and hook calling mechanisms for python"
+groups = ["default"]
+files = [
+    {file = "pluggy-1.5.0-py3-none-any.whl", hash = "sha256:44e1ad92c8ca002de6377e165f3e0f1be63266ab4d554740532335b9d75ea669"},
+    {file = "pluggy-1.5.0.tar.gz", hash = "sha256:2cffa88e94fdc978c4c574f15f9e59b7f4201d439195c3715ca9e2486f1d0cf1"},
+]
+
+[[package]]
 name = "polars"
 version = "1.2.1"
 requires_python = ">=3.8"
@@ -116,6 +233,25 @@ files = [
     {file = "polars-1.2.1-cp38-abi3-manylinux_2_24_aarch64.whl", hash = "sha256:d71f87f7ef9f4f4a1d52127399b1dae4a2622d528eea90f94912d92e0e9e3998"},
     {file = "polars-1.2.1-cp38-abi3-win_amd64.whl", hash = "sha256:764c2701b8ca8a27dcd7f23c94ba9031aec4d392061dfa7d1c2fdcbfd132d6ba"},
     {file = "polars-1.2.1.tar.gz", hash = "sha256:a46aba51acce7ecf85151f72d25ef2a3eeb5735d55f4b7cc69ec4a596e9fbefd"},
+]
+
+[[package]]
+name = "pytest"
+version = "8.3.1"
+requires_python = ">=3.8"
+summary = "pytest: simple powerful testing with Python"
+groups = ["default"]
+dependencies = [
+    "colorama; sys_platform == \"win32\"",
+    "exceptiongroup>=1.0.0rc8; python_version < \"3.11\"",
+    "iniconfig",
+    "packaging",
+    "pluggy<2,>=1.5",
+    "tomli>=1; python_version < \"3.11\"",
+]
+files = [
+    {file = "pytest-8.3.1-py3-none-any.whl", hash = "sha256:e9600ccf4f563976e2c99fa02c7624ab938296551f280835ee6516df8bc4ae8c"},
+    {file = "pytest-8.3.1.tar.gz", hash = "sha256:7e8e5c5abd6e93cb1cc151f23e57adc31fcf8cfd2a3ff2da63e23f732de35db6"},
 ]
 
 [[package]]

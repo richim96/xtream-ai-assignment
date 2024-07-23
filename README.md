@@ -35,6 +35,7 @@ Observability is key. Save every request and response made to the APIs to a **pr
 ## How to run
 
 ![diamond](https://img.itch.zone/aW1hZ2UvMTEwMDA2OC82MzQ0MTg0LmdpZg==/794x1000/L%2Fyy05.gif)
+
 ### Installation
 This project is managed with [`PDM`](https://pdm-project.org/en/latest). If you don't have it yet, make sure to install it.
 
@@ -58,6 +59,6 @@ curl -sSL https://pdm-project.org/install-pdm.py | python3 -
 pdm install
 ```
 
-### Training pipeline
+### ML Pipeline
 
 ### REST API

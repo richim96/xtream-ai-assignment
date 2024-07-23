@@ -3,18 +3,15 @@
 import pytest
 import polars as pl
 
-from diamonds.ml_pipeline.data_extraction import data_extract
+from const import CSV_SOURCE
+from diamonds.ml_pipeline.data_extraction import extract_from_csv
 
 
-SOURCE: str = "~/xtream-ai-assignment/data/raw/diamonds.csv"
+def test_extract_from_csv() -> None:
+    """Test csv data extraction on the locally available dataset."""
+    df: pl.DataFrame = extract_from_csv(CSV_SOURCE)
 
-
-def test_data_extract() -> None:
-    """Tests the data ingestion workload using the locally available training
-    data. The test passess upon successful data extraction.
-    """
-    lf: pl.LazyFrame = data_extract(SOURCE)
-    df: pl.DataFrame = lf.collect()
-
+    # The dataframe has rows
     assert df.shape[0] > 0
+    # The datafram has columns
     assert df.shape[1] > 0

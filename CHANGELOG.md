@@ -1,3 +1,9 @@
+## 0.4.0 (2024-07-23)
+
+### Feat
+
+- **data_preprocessing**: add data preprocessing submodule
+
 ## 0.3.0 (2024-07-23)
 
 ### Feat

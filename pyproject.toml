@@ -1,7 +1,7 @@
 # Project #
 [project]
 name = "diamonds"
-version = "0.2.1"
+version = "0.3.0"
 description = "Automated ML pipeline and REST API for model serving."
 authors = [
     {name = "Riccardo Mei"}, {email = "-"}

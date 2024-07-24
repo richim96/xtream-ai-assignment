@@ -3,9 +3,13 @@
 import pytest
 import polars as pl
 
-from const import CSV_SOURCE, NUMERICAL_COLS, CATEGORICAL_COLS
 from diamonds.ml_pipeline.data_extraction import extract_from_csv
-from diamonds.ml_pipeline.data_preprocessing import filter_numerical, dummy_encode
+from diamonds.ml_pipeline.data_preprocessing import (
+    filter_numerical,
+    dummy_encode,
+    cols_drop,
+)
+from _const import CSV_SOURCE, NUMERICAL_COLS, CATEGORICAL_COLS
 
 
 def test_filter_numerical() -> None:
@@ -25,3 +29,12 @@ def test_dummy_encode() -> None:
 
     assert df.shape[0] == dummy_encode(df, CATEGORICAL_COLS).shape[0]
     assert df.shape[1] < dummy_encode(df, CATEGORICAL_COLS).shape[1]
+
+
+def test_cols_drop() -> None:
+    """Test column dropping on the locally available dataset."""
+    df: pl.DataFrame = extract_from_csv(CSV_SOURCE)
+
+    assert df.shape[0] == cols_drop(df, CATEGORICAL_COLS + NUMERICAL_COLS).shape[0]
+    assert df.shape[1] > cols_drop(df, NUMERICAL_COLS).shape[1]
+    assert CATEGORICAL_COLS not in cols_drop(df, CATEGORICAL_COLS).columns

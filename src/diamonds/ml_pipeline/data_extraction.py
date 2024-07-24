@@ -19,5 +19,6 @@ def extract_from_csv(source: str | Path | IO[str] | IO[bytes] | bytes) -> pl.Dat
     Returns
     ----------
     pl.DataFrame
+        The newly extracted polars dataframe.
     """
-    return pl.read_csv(source)
+    return pl.read_csv(source=source)

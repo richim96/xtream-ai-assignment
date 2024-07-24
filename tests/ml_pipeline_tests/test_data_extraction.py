@@ -3,8 +3,8 @@
 import pytest
 import polars as pl
 
-from const import CSV_SOURCE
 from diamonds.ml_pipeline.data_extraction import extract_from_csv
+from _const import CSV_SOURCE
 
 
 def test_extract_from_csv() -> None:

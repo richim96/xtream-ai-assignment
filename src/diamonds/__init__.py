@@ -1,3 +1,1 @@
-"""Diamond price prediction pipeline and serving API"""
-
-__version__ = "0.2.1"
+"""Module for diamond price prediction pipeline, serving API, and db storage."""

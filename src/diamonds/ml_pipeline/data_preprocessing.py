@@ -20,6 +20,7 @@ def filter_numerical(df: pl.DataFrame, cols: list[str], n: int = 0) -> pl.DataFr
     Return
     ----------
     pl.DataFrame
+        The filtered polars dataframe.
     """
     pl_expression: Expr = pl.col(cols[0]) > n
 
@@ -42,5 +43,24 @@ def dummy_encode(df: pl.DataFrame, cols: list[str]) -> pl.DataFrame:
     Return
     ----------
     pl.DataFrame
+        The encoded polars dataframe.
     """
     return df.to_dummies(columns=cols, drop_first=True)
+
+
+def cols_drop(df: pl.DataFrame, cols: list[str]) -> pl.DataFrame:
+    """Drop the given columns.
+
+    Parameters
+    ----------
+    df : pl.DataFrame
+        Polars dataframe.
+    cols : list[str]
+        Columns to drop.
+
+    Return
+    ----------
+    pl.DataFrame
+        The new polars dataframe.
+    """
+    return df.drop(cols)

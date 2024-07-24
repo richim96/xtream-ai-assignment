@@ -1,3 +1,9 @@
+## 0.5.0 (2024-07-24)
+
+### Feat
+
+- **model_training**: add structure for models training - set up linear regression
+
 ## 0.4.0 (2024-07-23)
 
 ### Feat

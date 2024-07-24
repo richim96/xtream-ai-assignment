@@ -9,7 +9,6 @@ authors = [
 dependencies = [
     "requests>=2.32.3",
     "pandas>=2.2.2",
-    "polars>=1.2.1",
     "pytest>=8.3.1",
     "black>=24.4.2",
     "mypy>=1.11.0",

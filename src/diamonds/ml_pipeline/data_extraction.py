@@ -1,24 +1,23 @@
 """Sub-module for the data extraction workflow"""
 
-import polars as pl
+import pandas as pd
 
 from pathlib import Path
 from typing import IO
 
 
-def extract_from_csv(source: str | Path | IO[str] | IO[bytes] | bytes) -> pl.DataFrame:
-    """Load csv source data into a polars dataframe.
+def extract_from_csv(source: str | Path | IO[str] | IO[bytes] | bytes) -> pd.DataFrame:
+    """Load csv source data into a pandas dataframe.
 
     Parameters
     ----------
     source : str | Path | IO[str] | IO[bytes] | bytes
-        Path to a file or a file-like object. If `fsspec` is installed, it will
-        be used to open remote files. For file-like objects, stream position may
-        not be updated accordingly after reading.
+        Path to a file or a file-like object. URLs are also accepted. For file-like
+        objects, stream position may not be updated accordingly after reading
 
     Returns
     ----------
-    pl.DataFrame
-        The newly extracted polars dataframe.
+    pd.DataFrame
+        The newly extracted pandas dataframe.
     """
-    return pl.read_csv(source=source)
+    return pd.read_csv(filepath_or_buffer=source)

@@ -1,17 +1,13 @@
-"""Sub-module for the model training workflow"""
+"""Submodule for the model training workflow"""
 
 import numpy as np
 import pandas as pd
 
 from sklearn.linear_model import LinearRegression
 
-from diamonds.ml_pipeline.data_preprocessing import cols_drop
-
 
 def linear_model_train(
-    X_train: pd.Series,
-    y_train: pd.Series,
-    log_transform: bool = False,
+    X_train: pd.Series, y_train: pd.Series, log_transform: bool = False
 ) -> LinearRegression:
     """Train a simple linear regression model.
 
@@ -29,3 +25,11 @@ def linear_model_train(
     LinearRegression
         The trained linear regression model.
     """
+    lr: LinearRegression = LinearRegression()
+    lr.fit(X_train, y_train)
+
+    if log_transform:
+        y_train_log: pd.Series = np.log(y_train)
+        lr.fit(X_train, y_train_log)
+
+    return lr

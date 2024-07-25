@@ -1,4 +1,4 @@
-"""Sub-module for the data extraction workflow"""
+"""Submodule for the data extraction workflow"""
 
 import pandas as pd
 

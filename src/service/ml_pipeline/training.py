@@ -7,18 +7,18 @@ from sklearn.linear_model import LinearRegression
 
 
 def linear_model_train(
-    X_train: pd.Series, y_train: pd.Series, log_transform: bool = False
+    data_train: pd.Series, target_train: pd.Series, log_transform: bool = False
 ) -> LinearRegression:
     """Train a simple linear regression model.
 
     Parameters
     ----------
-    X_train : pd.Series
+    data_train : pd.Series
         Training series for the predictors.
-    y_train : pd.Seris
+    target_train : pd.Seris
         Training series for the target variable.
-    log_transform : bool
-        If true, retrain the model with a log tranformation on the target variable.
+    log_transform : bool, default=False
+        If `True`, train the model applying a log tranformation on the target.
 
     Return
     ----------
@@ -26,10 +26,15 @@ def linear_model_train(
         The trained linear regression model.
     """
     lr: LinearRegression = LinearRegression()
-    lr.fit(X_train, y_train)
 
     if log_transform:
-        y_train_log: pd.Series = np.log(y_train)
-        lr.fit(X_train, y_train_log)
+        y_train_log: pd.Series = np.log(target_train)
+        lr.fit(data_train, y_train_log)
+    else:
+        lr.fit(data_train, target_train)
 
     return lr
+
+
+def xgboost_train() -> None:
+    pass

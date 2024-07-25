@@ -6,9 +6,9 @@ from _const import CSV_SOURCE, COLS_NUMERIC, COLS_CATEGORICAL
 
 from service.ml_pipeline.data_extraction import extract_from_csv
 from service.ml_pipeline.preprocessing import (
-    categorical_to_ordinal,
     dummy_encode,
     filter_numeric,
+    to_categorical_dtype,
     train_test_data_get,
 )
 
@@ -30,14 +30,17 @@ def test_dummy_encode() -> None:
     assert _DF.shape[1] < dummy_encode(_DF, COLS_CATEGORICAL).shape[1]
 
 
-def test_categorical_to_ordinal() -> None:
-    """Test data transformation on locally available dataset."""
-    assert isinstance(
-        categorical_to_ordinal(
-            _DF, cols=COLS_CATEGORICAL, categories=["bad", "good", "best"]
-        ),
-        pd.DataFrame,
-    )
+def test_to_categorical_dtype() -> None:
+    """Test data casting on locally available dataset."""
+    df: pd.DataFrame = _DF.copy()
+    targets: list[tuple[str, list[str]]] = [
+        ("cut", ["Fair", "Good", "Very Good", "Ideal", "Premium"]),
+        ("color", ["D", "E", "F", "G", "H", "I", "J"]),
+    ]
+    df = to_categorical_dtype(df, targets=targets, ordered=True)
+
+    assert _DF is not df
+    assert _DF["cut"].dtype != df["cut"].dtype
 
 
 def test_train_test_data_get() -> None:

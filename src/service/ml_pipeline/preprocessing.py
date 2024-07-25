@@ -49,27 +49,28 @@ def dummy_encode(df: pd.DataFrame, cols: str | list[str]) -> pd.DataFrame:
     return pd.get_dummies(data=df, columns=cols, drop_first=True)
 
 
-def categorical_to_ordinal(
-    df: pd.DataFrame, cols: list[str], categories: list[str], ordered: bool = True
+def to_categorical_dtype(
+    df: pd.DataFrame, targets: list[tuple[str, list[str]]], ordered: bool = True
 ) -> pd.DataFrame:
-    """
+    """Cast the values in each given column into the pandas `category` dtype.
+
     Parameters
     ----------
     df : pd.DataFrame
         Pandas datatframe.
-    cols : list[str]
-        Categorical columns to transform.
-    categories : list[str]
-        The categories to transform into ordinal values.
-    ordered : bool
-        If true, each column is considered an ordered categorical.
+    targets : list[tuple[str, list[str]]]
+        The list of column/categories pairs to cast.
+    ordered : bool, default=True
+        If `True`, each column is considered an ordered categorical.
 
     Return
     ----------
     pd.DataFrame
         The transformed pandas dataframe.
     """
-    for col in cols:
+    for target in targets:
+        col: str = target[0]
+        categories: list[str] = target[1]
         df[col] = pd.Categorical(df[col], categories=categories, ordered=ordered)
 
     return df
@@ -78,17 +79,18 @@ def categorical_to_ordinal(
 def train_test_data_get(
     df: pd.DataFrame, target: str, test_size: float = 0.2, seed: int = 42
 ) -> list[pd.Series]:
-    """
+    """Separate data in training and testing sets.
+
     Parameters
     ----------
     df : pd.DataFrame
         Pandas datatframe.
     target : str
         Target column for the model's prediction.
-    test_size : float
+    test_size : float, default=0.2
         Determines the size of the testing set. The training set is complemented
         by default. The acceptables values range between 0.0 and 1.0.
-    seed : int
+    seed : int, default=42
         Random-state seed to control data shuffling before the split. It allows
         for reproducible output across multiple calls.
 

@@ -2,10 +2,10 @@
 
 import pandas as pd
 
-from _const import CSV_SOURCE, COLS_NUMERIC, COLS_CATEGORICAL
+from _const import CSV_SOURCE, COLS_NUMERIC, COLS_CATEGORICAL, XGB_TARGETS
 
-from service.ml_pipeline.data_extraction import extract_from_csv
-from service.ml_pipeline.preprocessing import (
+from xtream.ml_pipeline.data_extraction import extract_from_csv
+from xtream.ml_pipeline.preprocessing import (
     dummy_encode,
     filter_numeric,
     to_categorical_dtype,
@@ -33,11 +33,7 @@ def test_dummy_encode() -> None:
 def test_to_categorical_dtype() -> None:
     """Test data casting on locally available dataset."""
     df: pd.DataFrame = _DF.copy()
-    targets: list[tuple[str, list[str]]] = [
-        ("cut", ["Fair", "Good", "Very Good", "Ideal", "Premium"]),
-        ("color", ["D", "E", "F", "G", "H", "I", "J"]),
-    ]
-    df = to_categorical_dtype(df, targets=targets, ordered=True)
+    df = to_categorical_dtype(df, targets=XGB_TARGETS, ordered=True)
 
     assert _DF is not df
     assert _DF["cut"].dtype != df["cut"].dtype

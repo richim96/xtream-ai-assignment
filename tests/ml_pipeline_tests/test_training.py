@@ -3,30 +3,47 @@
 import pandas as pd
 
 from sklearn.linear_model import LinearRegression
+from xgboost import XGBRegressor
 
-from _const import CSV_SOURCE, COLS_CATEGORICAL, COLS_TO_DROP, COLS_NUMERIC
+from _const import CSV_SOURCE, COLS_CATEGORICAL, COLS_TO_DROP, COLS_NUMERIC, XGB_TARGETS
 
-from service.ml_pipeline.data_extraction import extract_from_csv
-from service.ml_pipeline.preprocessing import (
+from xtream.ml_pipeline.data_extraction import extract_from_csv
+from xtream.ml_pipeline.preprocessing import (
     dummy_encode,
     filter_numeric,
     to_categorical_dtype,
     train_test_data_get,
 )
-from service.ml_pipeline.training import linear_model_train
+from xtream.ml_pipeline.optimization import StdOptimizer
+from xtream.ml_pipeline.training import linear_regression_train, xgb_regressor_train
 
 _DF: pd.DataFrame = extract_from_csv(CSV_SOURCE)
-_DF = _DF.drop(columns=COLS_TO_DROP)
 _DF = filter_numeric(_DF, COLS_NUMERIC, 0)
-_DF = dummy_encode(_DF, COLS_CATEGORICAL)
-
-_DATA_TRAIN, _, _TARGET_TRAIN, _ = train_test_data_get(_DF, target="price")
 
 
-def test_linear_model_train() -> None:
+def test_linear_regression_train() -> None:
     """Test the succesful creation of a linear model."""
-    linear_model_train(_DATA_TRAIN, _TARGET_TRAIN)
-    assert isinstance(
-        linear_model_train(_DATA_TRAIN, _TARGET_TRAIN, log_transform=True),
-        LinearRegression,
-    )
+    df: pd.DataFrame = _DF.drop(columns=COLS_TO_DROP)
+
+    assert df is not _DF
+
+    df = dummy_encode(df, COLS_CATEGORICAL)
+    x_train, _, y_train, _ = train_test_data_get(df, target="price")
+
+    linear_regression_train(x_train, y_train, log_transform=True)
+    assert isinstance(linear_regression_train(x_train, y_train), LinearRegression)
+
+
+def test_xgb_regressor_train() -> None:
+    """Test the successful creation of a gradient boosting model."""
+    df: pd.DataFrame = _DF.copy()
+
+    assert df is not _DF
+
+    df = to_categorical_dtype(df, targets=XGB_TARGETS)
+    x_train, _, y_train, _ = train_test_data_get(df, target="price")
+    optimizer: StdOptimizer = StdOptimizer(x_train, y_train)
+    optimizer.opt_n_trials = 2  # trials take a long time to run for hook testing
+
+    xgb_regressor_train(x_train, y_train, optimizer=optimizer)
+    assert isinstance(xgb_regressor_train(x_train, y_train), XGBRegressor)

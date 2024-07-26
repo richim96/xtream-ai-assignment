@@ -2,7 +2,7 @@
 
 import pandas as pd
 
-from service.ml_pipeline.data_extraction import extract_from_csv
+from xtream.ml_pipeline.data_extraction import extract_from_csv
 
 from _const import CSV_SOURCE
 

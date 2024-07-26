@@ -32,7 +32,8 @@ def filter_numeric(df: pd.DataFrame, cols: list[str], n: int | float) -> pd.Data
 
 
 def dummy_encode(df: pd.DataFrame, cols: str | list[str]) -> pd.DataFrame:
-    """Perform one-hot encoding on the given categorical columns.
+    """Perform one-hot encoding on the given categorical columns. Always drop
+    the first column.
 
     Parameters
     ----------
@@ -50,7 +51,7 @@ def dummy_encode(df: pd.DataFrame, cols: str | list[str]) -> pd.DataFrame:
 
 
 def to_categorical_dtype(
-    df: pd.DataFrame, targets: list[tuple[str, list[str]]], ordered: bool = True
+    df: pd.DataFrame, targets: dict[str, list[str]], ordered: bool = True
 ) -> pd.DataFrame:
     """Cast the values in each given column into the pandas `category` dtype.
 
@@ -58,7 +59,7 @@ def to_categorical_dtype(
     ----------
     df : pd.DataFrame
         Pandas datatframe.
-    targets : list[tuple[str, list[str]]]
+    targets : dict[str, list[str]]
         The list of column/categories pairs to cast.
     ordered : bool, default=True
         If `True`, each column is considered an ordered categorical.
@@ -68,10 +69,8 @@ def to_categorical_dtype(
     pd.DataFrame
         The transformed pandas dataframe.
     """
-    for target in targets:
-        col: str = target[0]
-        categories: list[str] = target[1]
-        df[col] = pd.Categorical(df[col], categories=categories, ordered=ordered)
+    for col, categs in targets.items():
+        df[col] = pd.Categorical(df[col], categories=categs, ordered=ordered)
 
     return df
 
@@ -79,7 +78,7 @@ def to_categorical_dtype(
 def train_test_data_get(
     df: pd.DataFrame, target: str, test_size: float = 0.2, seed: int = 42
 ) -> list[pd.Series]:
-    """Separate data in training and testing sets.
+    """Separate a dataframe in training and testing sets for model fitting.
 
     Parameters
     ----------
@@ -92,7 +91,7 @@ def train_test_data_get(
         by default. The acceptables values range between 0.0 and 1.0.
     seed : int, default=42
         Random-state seed to control data shuffling before the split. It allows
-        for reproducible output across multiple calls.
+        for reproducible outputs across multiple calls.
 
     Return
     ----------

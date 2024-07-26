@@ -4,8 +4,8 @@ import pandas as pd
 
 from _const import CSV_SOURCE, COLS_NUMERIC, COLS_CATEGORICAL, XGB_TARGETS
 
-from xtream.ml_pipeline.data_extraction import extract_from_csv
-from xtream.ml_pipeline.preprocessing import (
+from xtream_service.ml_pipeline.data_extraction import extract_from_csv
+from xtream_service.ml_pipeline.preprocessing import (
     dummy_encode,
     filter_numeric,
     to_categorical_dtype,

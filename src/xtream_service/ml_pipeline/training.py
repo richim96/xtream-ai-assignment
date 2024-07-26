@@ -1,4 +1,4 @@
-"""Submodule for the model training workflow"""
+"""Module for the model training workflow"""
 
 import optuna
 import numpy as np
@@ -8,7 +8,8 @@ from optuna.study import Study
 from sklearn.linear_model import LinearRegression
 from xgboost import XGBRegressor
 
-from xtream.ml_pipeline.optimization import StdOptimizer
+from xtream_service.ml_pipeline import LOGGER
+from xtream_service.ml_pipeline.optimization import StdOptimizer
 
 
 def linear_regression_train(
@@ -33,8 +34,10 @@ def linear_regression_train(
     lr: LinearRegression = LinearRegression()
 
     if log_transform:
+        LOGGER.info("Training LR model with log transformation...")
         return lr.fit(x_train, np.log(y_train))
 
+    LOGGER.info("Training simple LR model...")
     return lr.fit(x_train, y_train)
 
 
@@ -58,7 +61,7 @@ def xgb_regressor_train(
     seed : int, default=42
         Random-state seed allowing for reproducible outputs across multiple calls.
     optimizer : StdOptimizer, default=None
-        An 'Optimizer()' instance to fine tune the model.
+        An 'Optimizer()' instance to fine tune the model's hyperparameters.
 
     Return
     ----------
@@ -69,8 +72,9 @@ def xgb_regressor_train(
     study: Study
 
     if optimizer is not None:
+        LOGGER.info("Fine tuning XGB regressor's hyperparamers...")
         study = optuna.create_study(
-            direction=optimizer.study_direction, study_name="XGB Fine Tuning"
+            direction=optimizer.study_direction, study_name="XGB Hyperparameter Tuning"
         )
         study.optimize(
             func=optimizer.std_objective_fn,
@@ -83,4 +87,5 @@ def xgb_regressor_train(
     else:
         xgb = XGBRegressor(enable_categorical=categorical, random_state=seed)
 
+    LOGGER.info("Training XGB regressor...")
     return xgb.fit(x_train, y_train)

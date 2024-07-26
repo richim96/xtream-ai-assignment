@@ -1,9 +1,9 @@
-"""Logging module. Only the logger `LOGGER` is meant for import."""
+"""Logging module"""
 
 import logging
 
 
-def _std_logger_get() -> logging.Logger:
+def std_logger_get() -> logging.Logger:
     """Create a `Logger` instance with basic configuration. The default logging
     level is set to `INFO`.
     """
@@ -14,6 +14,3 @@ def _std_logger_get() -> logging.Logger:
     )
 
     return logging.getLogger(__name__)
-
-
-LOGGER: logging.Logger = _std_logger_get()

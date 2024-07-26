@@ -1,4 +1,4 @@
-"""Submodule for the hyperparameter optimization workflow."""
+"""Module for the hyperparameter optimization workflow."""
 
 import pandas as pd
 
@@ -53,15 +53,13 @@ class StdOptimizer:
         y_train: pd.Series,
         test_size: float = 0.2,
         seed: int = 42,
-        study_diretion: str = "minimize",
-        opt_n_trials: int = 100,
     ) -> None:
         self.x_train: pd.Series = x_train
         self.y_train: pd.Series = y_train
         self.test_size: float = test_size
         self.seed: int = seed
-        self.study_direction: str = study_diretion
-        self.opt_n_trials: int = opt_n_trials
+        self.study_direction: str = "minimize"
+        self.opt_n_trials: int = 100
 
     def std_objective_fn(self, trial: Trial) -> float:
         """Standard objective function for hyperparameter tuning. It trains a

@@ -1,4 +1,4 @@
-"""Submodule for the model selection workflow"""
+"""Module for the model selection workflow"""
 
 import pandas as pd
 

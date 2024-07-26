@@ -7,18 +7,11 @@ from xgboost import XGBRegressor
 
 from _const import CSV_SOURCE, COLS_CATEGORICAL, COLS_TO_DROP, COLS_NUMERIC, XGB_TARGETS
 
-from xtream.ml_pipeline.data_extraction import extract_from_csv
-from xtream.ml_pipeline.preprocessing import (
-    dummy_encode,
-    filter_numeric,
-    to_categorical_dtype,
-    train_test_data_get,
-)
-from xtream.ml_pipeline.optimization import StdOptimizer
-from xtream.ml_pipeline.training import linear_regression_train, xgb_regressor_train
+from xtream_service.ml_pipeline import data_extraction, preprocessing, training
+from xtream_service.ml_pipeline.optimization import StdOptimizer
 
-_DF: pd.DataFrame = extract_from_csv(CSV_SOURCE)
-_DF = filter_numeric(_DF, COLS_NUMERIC, 0)
+_DF: pd.DataFrame = data_extraction.extract_from_csv(CSV_SOURCE)
+_DF = preprocessing.filter_numeric(_DF, COLS_NUMERIC, 0)
 
 
 def test_linear_regression_train() -> None:
@@ -27,11 +20,13 @@ def test_linear_regression_train() -> None:
 
     assert df is not _DF
 
-    df = dummy_encode(df, COLS_CATEGORICAL)
-    x_train, _, y_train, _ = train_test_data_get(df, target="price")
+    df = preprocessing.dummy_encode(df, COLS_CATEGORICAL)
+    x_train, _, y_train, _ = preprocessing.train_test_data_get(df, target="price")
 
-    linear_regression_train(x_train, y_train, log_transform=True)
-    assert isinstance(linear_regression_train(x_train, y_train), LinearRegression)
+    training.linear_regression_train(x_train, y_train, log_transform=True)
+    assert isinstance(
+        training.linear_regression_train(x_train, y_train), LinearRegression
+    )
 
 
 def test_xgb_regressor_train() -> None:
@@ -40,10 +35,10 @@ def test_xgb_regressor_train() -> None:
 
     assert df is not _DF
 
-    df = to_categorical_dtype(df, targets=XGB_TARGETS)
-    x_train, _, y_train, _ = train_test_data_get(df, target="price")
+    df = preprocessing.to_categorical_dtype(df, targets=XGB_TARGETS)
+    x_train, _, y_train, _ = preprocessing.train_test_data_get(df, target="price")
     optimizer: StdOptimizer = StdOptimizer(x_train, y_train)
     optimizer.opt_n_trials = 2  # trials take a long time to run for hook testing
 
-    xgb_regressor_train(x_train, y_train, optimizer=optimizer)
-    assert isinstance(xgb_regressor_train(x_train, y_train), XGBRegressor)
+    training.xgb_regressor_train(x_train, y_train, optimizer=optimizer)
+    assert isinstance(training.xgb_regressor_train(x_train, y_train), XGBRegressor)

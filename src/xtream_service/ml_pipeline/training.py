@@ -32,13 +32,16 @@ def linear_regression_train(
         The trained linear regression model.
     """
     lr: LinearRegression = LinearRegression()
-
     if log_transform:
-        LOGGER.info("Training LR model with log transformation...")
-        return lr.fit(x_train, np.log(y_train))
+        y_train = np.log(y_train)
 
-    LOGGER.info("Training simple LR model...")
-    return lr.fit(x_train, y_train)
+    lr.fit(x_train, y_train)
+    LOGGER.info(
+        "Linear model with log transformation trained."
+        if log_transform
+        else "Linear model trained."
+    )
+    return lr
 
 
 def xgb_regressor_train(
@@ -72,7 +75,7 @@ def xgb_regressor_train(
     study: Study
 
     if optimizer is not None:
-        LOGGER.info("Fine tuning XGB regressor's hyperparamers...")
+        LOGGER.info("Fine-tuning XGBRegressor's hyperparameters...")
         study = optuna.create_study(
             direction=optimizer.study_direction, study_name="XGB Hyperparameter Tuning"
         )
@@ -87,5 +90,6 @@ def xgb_regressor_train(
     else:
         xgb = XGBRegressor(enable_categorical=categorical, random_state=seed)
 
-    LOGGER.info("Training XGB regressor...")
-    return xgb.fit(x_train, y_train)
+    xgb.fit(x_train, y_train)
+    LOGGER.info("Gradient boosting model trained.")
+    return xgb

@@ -22,5 +22,6 @@ def extract_from_csv(source: str | Path | IO[str] | IO[bytes] | bytes) -> pd.Dat
     pd.DataFrame
         The newly extracted pandas dataframe.
     """
-    LOGGER.info("Reading dataset from .csv file...")
-    return pd.read_csv(filepath_or_buffer=source)
+    df: pd.DataFrame = pd.read_csv(filepath_or_buffer=source)
+    LOGGER.info("Data successfully extracted from: %s.", source)
+    return df

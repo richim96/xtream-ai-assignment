@@ -3,7 +3,7 @@
 import logging
 
 
-def std_logger_get() -> logging.Logger:
+def std_logger_get(current_module: str) -> logging.Logger:
     """Create a `Logger` instance with basic configuration. The default logging
     level is set to `INFO`.
     """
@@ -13,4 +13,4 @@ def std_logger_get() -> logging.Logger:
         %(asctime)s - %(levelname)s - %(message)s * [%(filename)s, line %(lineno)d]""",
     )
 
-    return logging.getLogger(__name__)
+    return logging.getLogger(current_module)

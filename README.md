@@ -35,7 +35,8 @@ Observability is key. Save every request and response made to the APIs to a **pr
 ## How to run
 
 ![diamond](https://img.itch.zone/aW1hZ2UvMTEwMDA2OC82MzQ0MTg0LmdpZg==/794x1000/L%2Fyy05.gif)
-### Installation
+
+### Installation guide
 This project is managed with [`PDM`](https://pdm-project.org/en/latest). If you don't have it yet, make sure to install it.
 
 - MacOS:
@@ -58,6 +59,37 @@ curl -sSL https://pdm-project.org/install-pdm.py | python3 -
 pdm install
 ```
 
-### Automated pipeline
+### ML Pipeline [Challenge 1 and 2]
+Now you can launch the pipeline. Just run:
+```bash
+pdm run python scripts/train.py
+```
+This script starts a training cycle for **linear** and **gradient boosting** models. During each cycle, the following assets are created and stored: the processed datasets used for training, the various models, and a training log. A copy of the **best-performing** model is stored separately, for ease of access.
 
-### REST API
+
+All related assets are mapped via unique identifiers: the details can be retrieved from the training log, which is updated at each cycle.
+
+
+To simplify first-time usage, I included a ```.env``` file with minimal configurations. This ensures that the assets are saved in the correct place when you operate the tool locally. However, you can bypass it dynamically from the CLI (ideally, redirecting the assets to an external storage service):
+```bash
+pdm run python scripts/train.py --help
+```
+```
+usage: ML Pipeline Argument Parser [-h] [-ds DATA_SOURCE] [-dt DATA_TARGET] [-mt MODELS_TARGET] ...
+
+  -h, --help            show this help message and exit
+  -ds DATA_SOURCE, --data-source DATA_SOURCE
+                        Data source path.
+  -dt DATA_TARGET, --data-target DATA_TARGET
+                        Data storage path.
+  -mt MODELS_TARGET, --models-target MODELS_TARGET
+                        Models storage path.
+  -st SOTA_TARGET, --sota-target SOTA_TARGET
+                        SOTA model storage path.
+  -lt LOG_TARGET, --log-target LOG_TARGET
+                        Log storage path.
+  -n N_MODELS, --n-models N_MODELS
+                        Number of training attempts per model.
+```
+
+### REST API [Challenge 3]

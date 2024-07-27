@@ -1,25 +1,35 @@
+# Project #
 [project]
-name = "diamonds"
-version = "0.2.0"
-description = "Automated pipeline for model training and REST API for serving predictions on diamond data."
+name = "xtream_service"
+version = "0.6.0"
+description = "Xtream services for model training and serving."
 authors = [
-    {name = "Riccardo Mei"},
+    {name = "Riccardo Mei"}, {email = "-"}
 ]
 dependencies = [
     "requests>=2.32.3",
     "pandas>=2.2.2",
-    "polars>=1.2.1",
+    "pytest>=8.3.1",
+    "black>=24.4.2",
+    "mypy>=1.11.0",
+    "pre-commit>=3.7.1",
+    "scikit-learn>=1.5.1",
+    "xgboost>=2.1.0",
+    "optuna>=3.6.1",
+    "logging>=0.4.9.6",
 ]
 requires-python = ">=3.12"
 readme = "README.md"
 
-[build-system]
-requires = ["pdm-backend"]
-build-backend = "pdm.backend"
+# Tools #
+[tool.pdm.build]
+excludes = ["**/.DS_Store"]
+package-dir = "src"
+source-includes = ["tests", "CHANGELOG.md", "README.md"]
 
-
-[tool.pdm]
-distribution = true
+[tool.pdm.version]
+source = "file"
+path = "src/diamonds/__init__.py"
 
 [tool.commitizen]
 name = "cz_conventional_commits"
@@ -28,3 +38,15 @@ version_scheme = "pep440"
 version_provider = "pep621"
 update_changelog_on_bump = true
 major_version_zero = true
+
+[tool.pytest.ini_options]
+minversion = "6.0"
+testpaths = ["tests"]
+
+[tool.mypy]
+ignore_missing_imports = true
+
+# Build #
+[build-system]
+requires = ["pdm-backend"]
+build-backend = "pdm.backend"

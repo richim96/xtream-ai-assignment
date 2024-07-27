@@ -1,3 +1,10 @@
+# Temporary assets
+/assets/data/processed/
+/assets/models_history/
+/assets/sota/
+/assets/logs/
+
+
 # MacOS
 .DS_Store
 
@@ -127,7 +134,7 @@ celerybeat.pid
 *.sage.py
 
 # Environments
-.env
+# .env
 .venv
 env/
 venv/

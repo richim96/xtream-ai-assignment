@@ -1,7 +1,9 @@
 # Temporary assets
 /assets/data/processed/
-/assets/models/
+/assets/models_history/
+/assets/sota/
 /assets/logs/
+
 
 # MacOS
 .DS_Store

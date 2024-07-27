@@ -3,6 +3,7 @@
 import optuna
 import pandas as pd
 
+from optuna.study import Study
 from optuna.trial import Trial
 from sklearn.metrics import mean_absolute_error
 from sklearn.model_selection import train_test_split
@@ -21,17 +22,17 @@ class StdOptimizer:
         Training series for the predictors.
     y_train : pd.Seris
         Training series for the target variable.
-    seed : int
-        Random-state seed allowing for reproducible outputs across multiple calls.
     test_size : float
         Determines the size of the testing set. The training set is complemented
         by default. The acceptables values range between 0.0 and 1.0.
+    seed : int
+        Random-state seed allowing for reproducible outputs across multiple calls.
 
     Attributes
     ----------
     x_train : pd.Series
         Training series for the predictors.
-    y_train : pd.Seris
+    y_train : pd.Series
         Training series for the target variable.
     test_size : float, default=0.2
         Determines the size of the testing set. The training set is complemented
@@ -40,6 +41,8 @@ class StdOptimizer:
         Random-state seed allowing for reproducible outputs across multiple calls.
     study_diretion : str, default="minimize"
         Direction of the optuna study. Default set to `minimize`.
+    optuna_study : Study
+        Optuna study for hyperparameter optimization.
     opt_n_trials : int, default=100
         Number of trials for each optimization process. Default set to `100`.
 
@@ -62,6 +65,7 @@ class StdOptimizer:
         self.test_size: float = test_size
         self.seed: int = seed
         self.study_direction: str = "minimize"
+        self.optuna_study: Study = optuna.create_study(direction=self.study_direction)
         self.opt_n_trials: int = 100
 
     def std_objective_fn(self, trial: Trial) -> float:

@@ -1,6 +1,5 @@
 """Automated script to train models with fresh data"""
 
-# from datetime import datetime
 from uuid import uuid4, UUID
 
 import pandas as pd
@@ -9,24 +8,20 @@ from sklearn.linear_model import LinearRegression
 from xgboost import XGBRegressor
 
 from xtream_service.ml_pipeline.data_extraction import extract_from_csv
-from xtream_service.ml_pipeline import (
-    preprocessing,
-    training,
-    model_selection,
-    model_serialization,
-)
+from xtream_service.ml_pipeline import models, model_selection, preprocessing
 from xtream_service.ml_pipeline.optimization import StdOptimizer
 
 # Define the data source before starting the training cycle.
 DATA_SOURCE: str = "assets/data/raw/diamonds/diamonds.csv"
 
 
-def main() -> None:
-    """Run the ML pipeline end-to-end, save training logs and finde the sota model."""
-    lr: LinearRegression
-    xgb: XGBRegressor
+# TODO: break down script into separate functions
+if __name__ == "__main__":
+    # Run the ML pipeline end-to-end, save training logs and finde the sota model
+    lr: models.LinearRegressionModel
+    xgb: models.XgbRegressorModel
 
-    model_objs: list[dict] = []
+    model_objs: list = []
 
     # ----- Extract and clean data ----- #
     df: pd.DataFrame = extract_from_csv(DATA_SOURCE)
@@ -42,10 +37,15 @@ def main() -> None:
         df_linear, target="price"
     )
 
-    lr = training.linear_regression_train(x_train_lr, y_train_lr)
-    model_objs.append(model_serialization.model_object_make(lr, df_linear_uid))
-    lr = training.linear_regression_train(x_train_lr, y_train_lr, log_transform=True)
-    model_objs.append(model_serialization.model_object_make(lr, df_linear_uid))
+    # for i in range(5):
+    lr = models.LinearRegressionModel(LinearRegression(), df_linear_uid)
+    lr.train(x_train_lr, y_train_lr)
+    lr.evaluate(x_test_lr, y_test_lr)
+    model_objs.append(lr)
+    lr2 = models.LinearRegressionModel(LinearRegression(), df_linear_uid)
+    lr2.train(x_train_lr, y_train_lr, log_transform=True)
+    lr2.evaluate(x_test_lr, y_test_lr)
+    model_objs.append(lr2)
 
     # ----- Gradient Boosting Models ----- #
     df_xgb_uid: UUID = uuid4()
@@ -64,16 +64,24 @@ def main() -> None:
         preprocessing.train_test_data_get(df_xgb, target="price")
     )
 
-    xgb = training.xgb_regressor_train(x_train_xgb, y_train_xgb)
-    model_objs.append(model_serialization.model_object_make(xgb, df_xgb_uid))
-    xgb = training.xgb_regressor_train(
-        x_train_xgb, y_train_xgb, optimizer=StdOptimizer(x_train_xgb, y_train_xgb)
+    xgb = models.XgbRegressorModel(
+        XGBRegressor(enable_categorical=True, random_state=42), df_xgb_uid
     )
-    model_objs.append(model_serialization.model_object_make(xgb, df_xgb_uid))
+    xgb.train(x_train_xgb, y_train_xgb)
+    xgb.evaluate(x_test_xgb, y_test_xgb)
+    model_objs.append(xgb)
+    xgb2 = models.XgbRegressorModel(
+        XGBRegressor(enable_categorical=True, random_state=42), df_xgb_uid
+    )
+    xgb2.optimizer = StdOptimizer(x_train_xgb, y_train_xgb)
+    xgb2.train(x_train_xgb, y_train_xgb)
+    xgb2.evaluate(x_test_xgb, y_test_xgb)
+    model_objs.append(xgb2)
 
-    # Evaluate models and store metadata logs
-    print(model_objs)
-
-
-if __name__ == "__main__":
-    main()
+    # Get Sota
+    model_selection.sota_set(model_objs)
+    for model in model_objs:
+        if not model.is_sota:
+            model.serialize("assets/models")
+        else:
+            model.serialize("assets/models/sota")

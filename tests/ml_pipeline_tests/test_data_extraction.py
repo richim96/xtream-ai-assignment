@@ -2,9 +2,9 @@
 
 import pandas as pd
 
-from xtream_service.ml_pipeline.data_extraction import extract_from_csv
-
 from _const import CSV_SOURCE
+
+from xtream_service.ml_pipeline.data_extraction import extract_from_csv
 
 
 def test_extract_from_csv() -> None:

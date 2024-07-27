@@ -1,7 +1,7 @@
 # Project #
 [project]
 name = "xtream_service"
-version = "0.5.0"
+version = "0.6.0"
 description = "Xtream services for model training and serving."
 authors = [
     {name = "Riccardo Mei"}, {email = "-"}

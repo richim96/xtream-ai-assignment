@@ -3,7 +3,7 @@
 import logging
 
 
-def std_logger_get(current_module: str) -> logging.Logger:
+def cli_logger_get(current_module: str) -> logging.Logger:
     """Create a `Logger` instance with basic configuration. The default logging
     level is set to `INFO`.
     """

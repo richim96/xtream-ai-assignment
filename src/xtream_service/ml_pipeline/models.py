@@ -23,23 +23,23 @@ class BaseModel(ABC):
     ----------
     model
         Instance of the chosen model object.
-    data_uid : UUID
+    data_uid : str
         Identifier of the training dataset used.
 
     Attributes
     ----------
-    uid : UUID
+    uid : str
         Model identifier. It updates at every training cycle.
     model
         Instance of the chosen model object.
-    data_uid : UUID
+    data_uid : str
         Identifier of the training dataset used.
     metrics : dict[str, float] | None, default=None
         Model evaluation metrics.
     is_sota : bool, default=False
         Whether the model correspons to the state-of-the-art.
-    timestamp : int
-        Timestamp of the object's creation. It updates at every training cycle.
+    created_at : str
+        Time of the object's creation. It updates at every training cycle.
 
     Methods
     ----------
@@ -55,21 +55,21 @@ class BaseModel(ABC):
     def __init__(self, model, data_uid: UUID):
         # The model object identifier and timestamp will update each time the
         # actual model will get trained, for it will not be the same model.
-        self.uid: UUID | None = None
+        self.uid: str = ""
         self.model = model
-        self.data_uid: UUID = data_uid
+        self.data_uid: str = str(data_uid)
         self.metrics: dict[str, float] | None = None
         self.is_sota: bool = False
-        self.timestamp: int | None = None
+        self.created_at: str = ""
 
     def info(self) -> dict:
         """Create a collection of model info for logging."""
         return {
             "model_uid": self.uid,
             "data_uid": self.data_uid,
-            "performance_metrics": self.metrics,
+            "metrics": self.metrics,
             "is_sota": self.is_sota,
-            "created_at": self.timestamp,
+            "created_at": self.created_at,
         }
 
     def evaluate(self, x_test: pd.Series, y_test: pd.Series) -> None:
@@ -116,23 +116,23 @@ class LinearRegressionModel(BaseModel):
     ----------
     model
         Instance of the chosen model object.
-    data_uid : UUID
+    data_uid : str
         Identifier of the training dataset used.
 
     Attributes
     ----------
-    uid : UUID
+    uid : str
         Model identifier. It updates at every training cycle.
     model
         Instance of the chosen model object.
-    data_uid : UUID
+    data_uid : str
         Identifier of the training dataset used.
     metrics : dict[str, float] | None, default=None
         Model evaluation metrics.
     is_sota : bool, default=False
         Whether the model correspons to the state-of-the-art.
-    timestamp : int
-        Timestamp of the object's creation. It updates at every training cycle.
+    created_at : str
+        Time of the object's creation. It updates at every training cycle.
 
     Methods
     ----------
@@ -161,20 +161,16 @@ class LinearRegressionModel(BaseModel):
         log_transform : bool, default=False
             If `True`, train the model applying a log tranformation on the target.
         """
-        # The model object identifier and timestamp will update each time the
-        # actual model will get trained, for it will not be the same model.
-        self.uid = uuid4()
-        self.timestamp: int = int(
-            datetime.now(timezone.utc).replace(tzinfo=timezone.utc).timestamp()
-        )
-
+        self.uid = str(uuid4())
+        self.created_at = str(datetime.now(timezone.utc))
         target: pd.Series = np.log(y_train) if log_transform else y_train
 
         self.model.fit(x_train, target)
+
         if log_transform:
-            LOGGER.info("Linear model '%s' trained with log transformation.", self.uid)
+            LOGGER.info("Linear model %s trained with log transformation.", self.uid)
         else:
-            LOGGER.info("Linear model '%s' trained", self.uid)
+            LOGGER.info("Linear model %s trained", self.uid)
 
 
 class XgbRegressorModel(BaseModel):
@@ -184,7 +180,7 @@ class XgbRegressorModel(BaseModel):
     ----------
     model
         Instance of the chosen model object.
-    data_uid : UUID
+    data_uid : str
         Identifier of the training dataset used.
     categorical : bool, default=True
             If `True`, it instructs to the regressor that the data is also categorical.
@@ -193,18 +189,18 @@ class XgbRegressorModel(BaseModel):
 
     Attributes
     ----------
-    uid : UUID
+    uid : str
         Model identifier. It updates at every training cycle.
     model
         Instance of the chosen model object.
-    data_uid : UUID
+    data_uid : str
         Identifier of the training dataset used.
     metrics : dict[str, float] | None, default=None
         Model evaluation metrics.
     is_sota : bool, default=False
         Whether the model correspons to the state-of-the-art.
-    timestamp : int
-        Timestamp of the object's creation. It updates at every training cycle.
+    created_at : str
+        Time of the object's creation. It updates at every training cycle.
     optimizer : StdOptimizer, default=None
             Optimizer instance to fine tune the model's hyperparameters.
     categorical : bool, default=True
@@ -241,15 +237,11 @@ class XgbRegressorModel(BaseModel):
         y_train : pd.Seris
             Training series for the target variable.
         """
-        # The model object identifier and timestamp will update each time the
-        # actual model will get trained, for it will not be the same model.
-        self.uid = uuid4()
-        self.timestamp: int = int(
-            datetime.now(timezone.utc).replace(tzinfo=timezone.utc).timestamp()
-        )
+        self.uid = str(uuid4())
+        self.created_at = str(datetime.now(timezone.utc))
 
         if self.optimizer is not None:
-            LOGGER.info("Fine-tuning XGBRegressor's hyperparameters...")
+            LOGGER.info("Tuning hyperparameters for model %s...", self.uid)
             self.optimizer.optuna_study.optimize(
                 func=self.optimizer.std_objective_fn,
                 n_trials=self.optimizer.opt_n_trials,
@@ -262,4 +254,4 @@ class XgbRegressorModel(BaseModel):
             )
 
         self.model.fit(x_train, y_train)
-        LOGGER.info("Gradient boosting model trained.")
+        LOGGER.info("Gradient boosting model %s trained.", self.uid)

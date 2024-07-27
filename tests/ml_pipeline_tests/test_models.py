@@ -32,7 +32,7 @@ def test_linear_regression_model() -> None:
 
     assert df is not _DF
     assert isinstance(lr.model, LinearRegression)
-    assert "mean_absolute_error" in lr.info()["performance_metrics"]
+    assert "mean_absolute_error" in lr.info()["metrics"]
 
 
 def test_xgb_regressor_model() -> None:
@@ -54,4 +54,4 @@ def test_xgb_regressor_model() -> None:
 
     assert df is not _DF
     assert isinstance(xgb.model, XGBRegressor)
-    assert "r2_score" in xgb.info()["performance_metrics"]
+    assert "r2_score" in xgb.info()["metrics"]

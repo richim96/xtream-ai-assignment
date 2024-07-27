@@ -1,8 +1,8 @@
 # Temporary assets
-/assets/data/processed/*
-#/assets/models_history/*
-#/assets/sota/*
-/assets/logs/*
+/assets/data/processed/
+/assets/models_history/
+/assets/sota/
+/assets/logs/
 
 
 # MacOS

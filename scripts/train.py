@@ -77,7 +77,7 @@ def _linear_models_train(
     lr: models.LinearRegressionModel
 
     df_uid: UUID = uuid4()
-    df_ln.drop(columns=["depth", "table", "y", "z"], inplace=True)
+    df_ln = df_ln.drop(columns=["depth", "table", "y", "z"])
     df_ln = preprocessing.dummy_encode(df_ln, ["cut", "color", "clarity"])
     df_ln.to_csv(f"{df_storage_path}{df_uid}.csv")
 
@@ -89,7 +89,7 @@ def _linear_models_train(
 
         lr = models.LinearRegressionModel(LinearRegression(), df_uid)
         lr.train(x_train, y_train, log_transform=True)
-        lr.evaluate(x_test, y_test)
+        lr.evaluate(x_test, y_test, log_transform=True)
 
         lr_models.append(lr)
 
@@ -161,7 +161,7 @@ if __name__ == "__main__":
 
     # Extract and clean data
     df: pd.DataFrame = extract_from_csv(DATA_SOURCE_PATH)
-    df = preprocessing.filter_numeric(df, cols=["carat", "price", "x", "y", "z"], n=0)
+    df = preprocessing.filter_numeric(df, ["carat", "price", "x", "y", "z"], n=0)
 
     # Prepare and train models, set SOTA and log training cycle
     model_objs: list = _linear_models_train(

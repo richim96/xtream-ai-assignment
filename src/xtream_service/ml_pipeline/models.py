@@ -45,7 +45,7 @@ class BaseModel(ABC):
     ----------
     info() -> dict
         Create a collection of model info for logging.
-    evaluate(x_test: pd.Series, y_test: pd.Series) -> None
+    evaluate(x_test: pd.Series, y_test: pd.Series, log_transform: bool) -> None
         Evaluate model performance on preset metrics. The current metrics for
         evaluation are R2 Score and Mean Absolute Error.
     serialize(storage_path: str) -> None
@@ -72,7 +72,9 @@ class BaseModel(ABC):
             "created_at": self.created_at,
         }
 
-    def evaluate(self, x_test: pd.Series, y_test: pd.Series) -> None:
+    def evaluate(
+        self, x_test: pd.Series, y_test: pd.Series, log_transform: bool = False
+    ) -> None:
         """Evaluate model performance on preset metrics. The current metrics for
         evaluation are R2 Score and Mean Absolute Error.
 
@@ -84,6 +86,8 @@ class BaseModel(ABC):
             The predictors test series on which to carry out the prediction.
         y_test : pd.Series
             The target test series against which to evaluate the prediction.
+        log_transform : bool, default=False
+            Whether the target variable has been transformed during training.
 
         Return
         ----------
@@ -91,6 +95,8 @@ class BaseModel(ABC):
             The metrics collected.
         """
         y_pred = self.model.predict(x_test)
+        y_pred = np.exp(y_pred) if log_transform else y_pred
+
         self.metrics = {
             "r2_score": r2_score(y_test, y_pred),
             "mean_absolute_error": mean_absolute_error(y_test, y_pred),
@@ -138,7 +144,7 @@ class LinearRegressionModel(BaseModel):
     ----------
     info() -> dict
         Create a collection of model info for logging.
-    evaluate(x_test: pd.Series, y_test: pd.Series) -> None
+    evaluate(x_test: pd.Series, y_test: pd.Series, log_transform: bool) -> None
         Evaluate model performance on preset metrics. The current metrics for
         evaluation are R2 Score and Mean Absolute Error.
     serialize(storage_path: str) -> None
@@ -212,7 +218,7 @@ class XgbRegressorModel(BaseModel):
     ----------
     info() -> dict
         Create a collection of model info for logging.
-    evaluate(x_test: pd.Series, y_test: pd.Series) -> None
+    evaluate(x_test: pd.Series, y_test: pd.Series, log_tranform: bool) -> None
         Evaluate model performance on preset metrics. The current metrics for
         evaluation are R2 Score and Mean Absolute Error.
     serialize(storage_path: str) -> None

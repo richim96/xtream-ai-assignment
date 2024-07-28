@@ -1,5 +1,6 @@
 """Module for the data preprocessing workflow"""
 
+import numpy as np
 import pandas as pd
 
 from sklearn.model_selection import train_test_split
@@ -23,11 +24,7 @@ def filter_numeric(df: pd.DataFrame, cols: list[str], n: int | float) -> pd.Data
     pd.DataFrame
         The filtered pandas dataframe.
     """
-    pd_expression = df[cols[0]] > n
-
-    for col in cols[1:]:
-        pd_expression &= df[col] > n
-
+    pd_expression = np.all(df[cols] > n, axis=1)
     return df[pd_expression]
 
 
@@ -100,5 +97,4 @@ def train_test_data_get(
     """
     x: pd.DataFrame = df.drop(columns=target)
     y: pd.Series = df[target]
-
     return train_test_split(x, y, test_size=test_size, random_state=seed)

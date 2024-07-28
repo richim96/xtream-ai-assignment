@@ -95,8 +95,7 @@ class BaseModel(ABC):
             The metrics collected.
         """
         y_pred = self.model.predict(x_test)
-        y_pred = np.exp(y_pred) if log_transform else y_pred
-
+        y_pred = np.expm1(y_pred) if log_transform else y_pred
         self.metrics = {
             "r2_score": r2_score(y_test, y_pred),
             "mean_absolute_error": mean_absolute_error(y_test, y_pred),
@@ -169,7 +168,7 @@ class LinearRegressionModel(BaseModel):
         """
         self.uid = str(uuid4())
         self.created_at = str(datetime.now(timezone.utc))
-        target: pd.Series = np.log(y_train) if log_transform else y_train
+        target: pd.Series = np.log1p(y_train) if log_transform else y_train
 
         self.model.fit(x_train, target)
 

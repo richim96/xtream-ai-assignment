@@ -158,7 +158,6 @@ def _gradient_boosting_train(
 if __name__ == "__main__":
     # ----- Run the ML pipeline E2E ----- #
     args = _cli_args_get()
-    # Set data sources and targets
     data_source = args.data_source or os.getenv("DATA_SOURCE", "")
     data_dest = args.data_dest or os.getenv("DATA_DEST", "")
     model_dest = args.model_dest or os.getenv("MODEL_DEST", "")
@@ -170,7 +169,7 @@ if __name__ == "__main__":
     df: pd.DataFrame = extract_from_csv(data_source)
     df = preprocessing.filter_numeric(df, ["carat", "price", "x", "y", "z"], n=0)
 
-    # Prepare and train models, set SOTA and log training cycle
+    # Train models, set SOTA and log training cycle
     model_objs: list = _linear_models_train(df.copy(), data_dest, n_models=nbr_models)
     model_objs += _gradient_boosting_train(df.copy(), data_dest, n_models=nbr_models)
 
@@ -179,6 +178,7 @@ if __name__ == "__main__":
             log: dict = json.load(f)
     except FileNotFoundError:
         log = {"log_uid": str(uuid4()), "data": [], "training_cycles": 0}
+        LOGGER.info("Log file not found at: (%s. New log created.", log_dest)
 
     log = model_selection.sota_update(model_objs, log)
     log["data"] += [model.info() for model in model_objs]

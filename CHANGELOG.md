@@ -1,3 +1,9 @@
+## 0.6.2 (2024-07-28)
+
+### Perf
+
+- **models,-preprocessing**: add performance improvement on df manipulation and switch to log1np/expm1 for log transformation
+
 ## 0.6.1 (2024-07-28)
 
 ### Fix

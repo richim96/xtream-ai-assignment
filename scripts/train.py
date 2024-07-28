@@ -1,8 +1,9 @@
 """Automated script to train models with fresh data"""
 
 import argparse
-import os
 import json
+import os
+import sys
 
 from datetime import datetime, timezone
 from random import randint
@@ -14,6 +15,7 @@ from dotenv import load_dotenv, find_dotenv
 from sklearn.linear_model import LinearRegression
 from xgboost import XGBRegressor
 
+from xtream_service.ml_pipeline import LOGGER
 from xtream_service.ml_pipeline.data_extraction import extract_from_csv
 from xtream_service.ml_pipeline import models, model_selection, preprocessing
 from xtream_service.ml_pipeline.optimization import StdOptimizer
@@ -39,24 +41,21 @@ def _cli_args_get():
     n_models : int
         Number of training attempts per model (linear, gradient boosting, etc.).
     """
-    parser = argparse.ArgumentParser("ML Pipeline Argument Parser")
-
+    parser = argparse.ArgumentParser("ML Pipeline")
     parser.add_argument("-ds", "--data-source", type=str, help="Data source path.")
-    parser.add_argument("-dt", "--data-target", type=str, help="Data storage path.")
-    parser.add_argument("-mt", "--models-target", type=str, help="Models storage path.")
+    parser.add_argument("-dd", "--data-dest", type=str, help="Data storage path.")
+    parser.add_argument("-m", "--model-dest", type=str, help="Models storage path.")
+    parser.add_argument("-s", "--sota-dest", type=str, help="SOTA model storage path.")
+    parser.add_argument("-l", "--log-dest", type=str, help="Log storage path.")
     parser.add_argument(
-        "-st", "--sota-target", type=str, help="SOTA model storage path."
-    )
-    parser.add_argument("-lt", "--log-target", type=str, help="Log storage path.")
-    parser.add_argument(
-        "-n", "--n-models", type=int, help="Number of training attempts per model."
+        "-n", "--n-models", type=int, help="Number of training attempts per model type."
     )
 
     return parser.parse_args()
 
 
 def _linear_models_train(
-    df_ln: pd.DataFrame, df_storage_path: str, n_models: int = 5
+    df_ln: pd.DataFrame, df_storage_path: str, n_models: int = 1
 ) -> list:
     """Launch training for linear models.
 
@@ -75,6 +74,10 @@ def _linear_models_train(
         A list with the model objects.
     """
     lr: models.LinearRegressionModel
+
+    if n_models <= 0:
+        LOGGER.error("You must train at least one model.")
+        sys.exit(1)
 
     df_uid: UUID = uuid4()
     df_ln = df_ln.drop(columns=["depth", "table", "y", "z"])
@@ -117,6 +120,10 @@ def _gradient_boosting_train(
     """
     xgb: models.XgbRegressorModel
 
+    if n_models <= 0:
+        LOGGER.error("You must train at least one model.")
+        sys.exit(1)
+
     df_xgb_uid: UUID = uuid4()
     df_xgb = preprocessing.to_categorical_dtype(
         df_xgb,
@@ -152,27 +159,23 @@ if __name__ == "__main__":
     # ----- Run the ML pipeline E2E ----- #
     args = _cli_args_get()
     # Set data sources and targets
-    DATA_SOURCE_PATH = args.data_source or os.getenv("DATA_SOURCE_PATH", "")
-    DATA_TARGET_PATH = args.data_target or os.getenv("DATA_TARGET_PATH", "")
-    MODELS_TARGET_PATH = args.models_target or os.getenv("MODELS_TARGET_PATH", "")
-    SOTA_TARGET_PATH = args.sota_target or os.getenv("SOTA_TARGET_PATH", "")
-    LOG_TARGET_PATH = args.log_target or os.getenv("LOG_TARGET_PATH", "")
-    N_MODELS = args.n_models or int(os.getenv("N_MODELS", ""))
+    data_source = args.data_source or os.getenv("DATA_SOURCE", "")
+    data_dest = args.data_dest or os.getenv("DATA_DEST", "")
+    model_dest = args.model_dest or os.getenv("MODEL_DEST", "")
+    sota_dest = args.sota_dest or os.getenv("SOTA_DEST", "")
+    log_dest = args.log_dest or os.getenv("LOG_DEST", "")
+    nbr_models = args.n_models if args.n_models is not None else 1
 
     # Extract and clean data
-    df: pd.DataFrame = extract_from_csv(DATA_SOURCE_PATH)
+    df: pd.DataFrame = extract_from_csv(data_source)
     df = preprocessing.filter_numeric(df, ["carat", "price", "x", "y", "z"], n=0)
 
     # Prepare and train models, set SOTA and log training cycle
-    model_objs: list = _linear_models_train(
-        df.copy(), DATA_TARGET_PATH, n_models=N_MODELS
-    )
-    model_objs += _gradient_boosting_train(
-        df.copy(), DATA_TARGET_PATH, n_models=N_MODELS
-    )
+    model_objs: list = _linear_models_train(df.copy(), data_dest, n_models=nbr_models)
+    model_objs += _gradient_boosting_train(df.copy(), data_dest, n_models=nbr_models)
 
     try:
-        with open(LOG_TARGET_PATH, "r", encoding="utf-8") as f:
+        with open(log_dest, "r", encoding="utf-8") as f:
             log: dict = json.load(f)
     except FileNotFoundError:
         log = {"log_uid": str(uuid4()), "data": [], "training_cycles": 0}
@@ -181,12 +184,12 @@ if __name__ == "__main__":
     log["data"] += [model.info() for model in model_objs]
     log["training_cycles"] += 1
     log["updated_at"] = str(datetime.now(timezone.utc))
-    with open(f"{LOG_TARGET_PATH}", "w", encoding="utf-8") as f:
+    with open(f"{log_dest}", "w", encoding="utf-8") as f:
         json.dump(log, f, indent=4)
 
     # Serialize newly trained models
     for model in model_objs:
-        model.serialize(MODELS_TARGET_PATH)
+        model.serialize(model_dest)
         if model.is_sota:
             sota_name: str = f"cycle_{str(log["training_cycles"])}_sota_"
-            model.serialize(SOTA_TARGET_PATH + sota_name)
+            model.serialize(sota_dest + sota_name)

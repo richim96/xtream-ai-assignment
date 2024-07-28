@@ -75,7 +75,7 @@ To simplify first-time usage, I included a ```.env``` file with minimal configur
 pdm run python scripts/train.py --help
 ```
 ```
-usage: ML Pipeline Argument Parser [-h] [-ds DATA_SOURCE] [-dt DATA_TARGET] [-mt MODELS_TARGET] ...
+usage: ML Pipeline Argument Parser [-h] [-ds DATA_SOURCE] [-dt DATA_TARGET] ...
 
   -h, --help            show this help message and exit
   -ds DATA_SOURCE, --data-source DATA_SOURCE

@@ -1,4 +1,4 @@
-"""Automated script to train models with fresh data"""
+"""Script to train models with fresh data"""
 
 import argparse
 import json
@@ -14,9 +14,8 @@ from sklearn.linear_model import LinearRegression
 from xgboost import XGBRegressor
 
 from xtream_service.utils.utils import uuid_get, utc_time_get
-from xtream_service.ml_pipeline import LOGGER
-from xtream_service.ml_pipeline.data_extraction import extract_from_csv
-from xtream_service.ml_pipeline import models, model_selection, preprocessing
+from xtream_service.ml_pipeline import LOGGER, data_processing
+from xtream_service.ml_pipeline import models, model_selection
 from xtream_service.ml_pipeline.optimization import StdOptimizer
 
 load_dotenv(find_dotenv())
@@ -40,7 +39,7 @@ def _cli_args_get():
     n_models : int
         Number of training attempts per model (linear, gradient boosting, etc.).
     """
-    parser = argparse.ArgumentParser("python train.py")
+    parser = argparse.ArgumentParser("python ml_pipeline.py")
     parser.add_argument("-ds", "--data-source", type=str, help="Data source path.")
     parser.add_argument("-dd", "--data-dest", type=str, help="Data storage path.")
     parser.add_argument("-m", "--model-dest", type=str, help="Models storage path.")
@@ -72,27 +71,26 @@ def _linear_models_train(
     list
         A list with the model objects.
     """
-    lr: models.LinearRegressionModel
-
     if n_models <= 0:
         LOGGER.error("You must train at least one model.")
         sys.exit(1)
 
+    # Preprocess data and store processed dataset for future reference
     df_uid: str = uuid_get()
     df_ln = df_ln.drop(columns=["depth", "table", "y", "z"])
-    df_ln = preprocessing.dummy_encode(df_ln, ["cut", "color", "clarity"])
+    df_ln = data_processing.dummy_encode(df_ln, ["cut", "color", "clarity"])
     df_ln.to_csv(f"{df_storage_path}{df_uid}.csv")
 
+    # Train linear models
     lr_models: list = []
     for _ in range(n_models):
-        x_train, x_test, y_train, y_test = preprocessing.train_test_data_get(
+        x_train, x_test, y_train, y_test = data_processing.train_test_data_get(
             df_ln, target="price", seed=randint(1, n_models * 10)
         )
 
         lr = models.LinearRegressionModel(LinearRegression(), df_uid)
         lr.train(x_train, y_train, log_transform=True)
         lr.evaluate(x_test, y_test, log_transform=True)
-
         lr_models.append(lr)
 
     return lr_models
@@ -117,14 +115,13 @@ def _gradient_boosting_train(
     list
         A list with the model objects.
     """
-    xgb: models.XgbRegressorModel
-
     if n_models <= 0:
         LOGGER.error("You must train at least one model.")
         sys.exit(1)
 
+    # Preprocess data and store processed dataset for future reference
     df_xgb_uid: str = uuid_get()
-    df_xgb = preprocessing.to_categorical_dtype(
+    df_xgb = data_processing.to_categorical_dtype(
         df_xgb,
         targets={
             "cut": ["Fair", "Good", "Very Good", "Ideal", "Premium"],
@@ -134,11 +131,11 @@ def _gradient_boosting_train(
     )
     df_xgb.to_csv(f"{df_storage_path}{df_xgb_uid}.csv")
 
+    # Train XGB models
     xgb_models: list = []
     for _ in range(n_models):
         seed: int = randint(1, n_models * 10)
-
-        x_train, x_test, y_train, y_test = preprocessing.train_test_data_get(
+        x_train, x_test, y_train, y_test = data_processing.train_test_data_get(
             df_xgb, target="price", seed=seed
         )
 
@@ -148,14 +145,13 @@ def _gradient_boosting_train(
         xgb.optimizer = StdOptimizer(x_train, y_train, seed=seed)
         xgb.train(x_train, y_train)
         xgb.evaluate(x_test, y_test)
-
         xgb_models.append(xgb)
 
     return xgb_models
 
 
 if __name__ == "__main__":
-    # ----- Run the ML pipeline E2E ----- #
+    # ----- Run ML pipeline E2E ----- #
     args = _cli_args_get()
     data_source = args.data_source or os.getenv("DATA_SOURCE", "")
     data_dest = args.data_dest or os.getenv("DATA_DEST", "")
@@ -165,8 +161,8 @@ if __name__ == "__main__":
     nbr_models = args.n_models if args.n_models is not None else 1
 
     # Extract and clean data
-    df: pd.DataFrame = extract_from_csv(data_source)
-    df = preprocessing.filter_numeric(df, ["carat", "price", "x", "y", "z"], n=0)
+    df: pd.DataFrame = data_processing.extract_from_csv(data_source)
+    df = data_processing.filter_numeric(df, ["carat", "price", "x", "y", "z"], n=0)
 
     # Train models, set SOTA and log training cycle
     model_objs: list = _linear_models_train(df.copy(), data_dest, n_models=nbr_models)

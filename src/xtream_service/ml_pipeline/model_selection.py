@@ -16,18 +16,18 @@ def sota_update(models: list, log: dict) -> dict:
     dict
         The log file with updated information about the SOTA, if any.
     """
-    # Find current SOTA
     sota = models[0]
-    for m in models[1:]:
+    # Find SOTA in the current batch
+    for model in models[1:]:
         if (
-            m.metrics["mean_absolute_error"] < sota.metrics["mean_absolute_error"]
-            and m.metrics["r2_score"] > sota.metrics["r2_score"]
+            model.metrics["mean_absolute_error"] < sota.metrics["mean_absolute_error"]
+            and model.metrics["r2_score"] > sota.metrics["r2_score"]
         ):
             sota.is_sota = False
-            m.is_sota = True
-            sota = m
+            model.is_sota = True
+            sota = model
 
-    # Compare with training history and determine SOTA
+    # Compare to current SOTA and determine active SOTA
     for model_info in log["data"]:
         if model_info["is_sota"]:
             if (

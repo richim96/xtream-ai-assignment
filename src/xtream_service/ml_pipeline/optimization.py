@@ -1,4 +1,4 @@
-"""Module for the hyperparameter optimization workflow."""
+"""Module for the hyperparameter optimization workflow"""
 
 import optuna
 import pandas as pd

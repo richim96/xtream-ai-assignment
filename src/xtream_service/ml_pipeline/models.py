@@ -1,4 +1,4 @@
-"""Module for serializing ML models."""
+"""Module for serializing ML models"""
 
 import pickle
 

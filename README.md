@@ -62,7 +62,7 @@ pdm install
 ### ML Pipeline [Challenge 1 and 2]
 Now you can launch the pipeline. Just run:
 ```bash
-pdm run python scripts/train.py
+pdm run python scripts/ml_pipeline.py
 ```
 This script starts a training cycle for **linear** and **gradient boosting** models. During each cycle, the following assets are created and stored: the processed datasets used for training, the various models, and a training log. A copy of the **best-performing** model is stored separately, for ease of access.
 
@@ -72,10 +72,10 @@ All related assets are mapped via unique identifiers: the details can be retriev
 
 To simplify first-time usage, I included a ```.env``` file with minimal configurations. This ensures that the assets are saved in the correct place when you operate the tool locally. However, you can bypass it dynamically from the CLI (ideally, redirecting the assets to an external storage service):
 ```bash
-pdm run python scripts/train.py --help
+pdm run python scripts/ml_pipeline.py --help
 ```
 ```
-usage: python train.py [-h] [-ds DATA_SOURCE] [-dd DATA_DEST] ...
+usage: python ml_pipeline.py [-h] [-ds DATA_SOURCE] [-dd DATA_DEST] ...
 
 options:
   -h, --help            show this help message and exit

@@ -5,9 +5,7 @@ import json
 import os
 import sys
 
-from datetime import datetime, timezone
 from random import randint
-from uuid import uuid4, UUID
 
 import pandas as pd
 
@@ -15,6 +13,7 @@ from dotenv import load_dotenv, find_dotenv
 from sklearn.linear_model import LinearRegression
 from xgboost import XGBRegressor
 
+from xtream_service.utils.utils import uuid_get, utc_time_get
 from xtream_service.ml_pipeline import LOGGER
 from xtream_service.ml_pipeline.data_extraction import extract_from_csv
 from xtream_service.ml_pipeline import models, model_selection, preprocessing
@@ -79,7 +78,7 @@ def _linear_models_train(
         LOGGER.error("You must train at least one model.")
         sys.exit(1)
 
-    df_uid: UUID = uuid4()
+    df_uid: str = uuid_get()
     df_ln = df_ln.drop(columns=["depth", "table", "y", "z"])
     df_ln = preprocessing.dummy_encode(df_ln, ["cut", "color", "clarity"])
     df_ln.to_csv(f"{df_storage_path}{df_uid}.csv")
@@ -124,7 +123,7 @@ def _gradient_boosting_train(
         LOGGER.error("You must train at least one model.")
         sys.exit(1)
 
-    df_xgb_uid: UUID = uuid4()
+    df_xgb_uid: str = uuid_get()
     df_xgb = preprocessing.to_categorical_dtype(
         df_xgb,
         targets={
@@ -177,13 +176,13 @@ if __name__ == "__main__":
         with open(log_dest, "r", encoding="utf-8") as f:
             log: dict = json.load(f)
     except FileNotFoundError:
-        log = {"log_uid": str(uuid4()), "data": [], "training_cycles": 0}
+        log = {"log_uid": uuid_get(), "data": [], "training_cycles": 0}
         LOGGER.info("Log file not found at: (%s. New log created.", log_dest)
 
     log = model_selection.sota_update(model_objs, log)
     log["data"] += [model.info() for model in model_objs]
     log["training_cycles"] += 1
-    log["updated_at"] = str(datetime.now(timezone.utc))
+    log["updated_at"] = utc_time_get()
     with open(f"{log_dest}", "w", encoding="utf-8") as f:
         json.dump(log, f, indent=4)
 

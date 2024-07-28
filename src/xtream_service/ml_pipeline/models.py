@@ -3,8 +3,6 @@
 import pickle
 
 from abc import ABC
-from datetime import datetime, timezone
-from uuid import uuid4, UUID
 
 import numpy as np
 import pandas as pd
@@ -12,6 +10,7 @@ import pandas as pd
 from sklearn.metrics import r2_score, mean_absolute_error
 from xgboost import XGBRegressor
 
+from xtream_service.utils.utils import uuid_get, utc_time_get
 from xtream_service.ml_pipeline import LOGGER
 from xtream_service.ml_pipeline.optimization import StdOptimizer
 
@@ -52,12 +51,12 @@ class BaseModel(ABC):
         Serialize model into a persistently stored pickle file.
     """
 
-    def __init__(self, model, data_uid: UUID):
+    def __init__(self, model, data_uid: str):
         # The model object identifier and timestamp will update each time the
         # actual model will get trained, for it will not be the same model.
         self.uid: str = ""
         self.model = model
-        self.data_uid: str = str(data_uid)
+        self.data_uid: str = data_uid
         self.metrics: dict[str, float] | None = None
         self.is_sota: bool = False
         self.created_at: str = ""
@@ -166,8 +165,8 @@ class LinearRegressionModel(BaseModel):
         log_transform : bool, default=False
             If `True`, train the model applying a log tranformation on the target.
         """
-        self.uid = str(uuid4())
-        self.created_at = str(datetime.now(timezone.utc))
+        self.uid = uuid_get()
+        self.created_at = utc_time_get()
         target: pd.Series = np.log1p(y_train) if log_transform else y_train
 
         self.model.fit(x_train, target)
@@ -226,7 +225,7 @@ class XgbRegressorModel(BaseModel):
         Train a gradient boosting model. Hyperparameter optimization available.
     """
 
-    def __init__(self, model, data_uid: UUID, categorical: bool = True, seed: int = 42):
+    def __init__(self, model, data_uid: str, categorical: bool = True, seed: int = 42):
         self.optimizer: StdOptimizer | None = None
         self.categorical = categorical
         self.seed = seed
@@ -242,8 +241,8 @@ class XgbRegressorModel(BaseModel):
         y_train : pd.Seris
             Training series for the target variable.
         """
-        self.uid = str(uuid4())
-        self.created_at = str(datetime.now(timezone.utc))
+        self.uid = uuid_get()
+        self.created_at = utc_time_get()
 
         if self.optimizer is not None:
             LOGGER.info("Tuning hyperparameters for model %s...", self.uid)

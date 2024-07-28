@@ -41,7 +41,7 @@ def _cli_args_get():
     n_models : int
         Number of training attempts per model (linear, gradient boosting, etc.).
     """
-    parser = argparse.ArgumentParser("ML Pipeline")
+    parser = argparse.ArgumentParser("python train.py")
     parser.add_argument("-ds", "--data-source", type=str, help="Data source path.")
     parser.add_argument("-dd", "--data-dest", type=str, help="Data storage path.")
     parser.add_argument("-m", "--model-dest", type=str, help="Models storage path.")

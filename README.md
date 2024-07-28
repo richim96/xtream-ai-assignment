@@ -10,18 +10,18 @@ The model is good enough. Now, it's time to build the supporting infrastructure.
 
 ### Challenge 1
 
-**Develop an automated pipeline** that trains your model with fresh data, keeping it as sharp as the diamonds it processes. 
-Pick the best linear model -- do not worry about the xgboost model or hyperparameter tuning. 
+**Develop an automated pipeline** that trains your model with fresh data, keeping it as sharp as the diamonds it processes.
+Pick the best linear model -- do not worry about the xgboost model or hyperparameter tuning.
 Maintain a history of all the models you train and save the performance metrics of each one.
 
 ### Challenge 2
 
-Level up! Now, you need to support **both models** that Marta developed: the linear regression and the XGBoost with hyperparameter optimization. 
+Level up! Now, you need to support **both models** that Marta developed: the linear regression and the XGBoost with hyperparameter optimization.
 Be careful, in the near future you may want to include more models, so make sure your pipeline is flexible enough to handle that.
 
 ### Challenge 3
 
-Build a **REST API** to integrate your model into a web app, making it a breeze for the team to use. Keep it developer-friendly – not everyone speaks 'data scientist'! 
+Build a **REST API** to integrate your model into a web app, making it a breeze for the team to use. Keep it developer-friendly – not everyone speaks 'data scientist'!
 Your API should support two use cases:
 1. Predict the value of a diamond.
 2. Given the features of a diamond, return n samples from the training dataset with the same cut, color, and clarity, and the most similar weight.
@@ -75,21 +75,22 @@ To simplify first-time usage, I included a ```.env``` file with minimal configur
 pdm run python scripts/train.py --help
 ```
 ```
-usage: ML Pipeline Argument Parser [-h] [-ds DATA_SOURCE] [-dt DATA_TARGET] ...
+usage: python train.py [-h] [-ds DATA_SOURCE] [-dd DATA_DEST] ...
 
+options:
   -h, --help            show this help message and exit
   -ds DATA_SOURCE, --data-source DATA_SOURCE
                         Data source path.
-  -dt DATA_TARGET, --data-target DATA_TARGET
+  -dd DATA_DEST, --data-dest DATA_DEST
                         Data storage path.
-  -mt MODELS_TARGET, --models-target MODELS_TARGET
+  -m MODEL_DEST, --model-dest MODEL_DEST
                         Models storage path.
-  -st SOTA_TARGET, --sota-target SOTA_TARGET
+  -s SOTA_DEST, --sota-dest SOTA_DEST
                         SOTA model storage path.
-  -lt LOG_TARGET, --log-target LOG_TARGET
+  -l LOG_DEST, --log-dest LOG_DEST
                         Log storage path.
   -n N_MODELS, --n-models N_MODELS
-                        Number of training attempts per model.
+                        Number of training attempts per model type.
 ```
 
 ### REST API [Challenge 3]

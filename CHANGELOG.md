@@ -1,3 +1,14 @@
+## 0.6.1 (2024-07-28)
+
+### Fix
+
+- **models**: fix issue during evaluation of linear models trained with log transformation
+
+### Refactor
+
+- **train.py**: refactor argument parsers and .env variables management - add error check for invalid number of models to train
+- **assets**: add storage folders for local tests
+
 ## 0.6.0 (2024-07-27)
 
 ### Feat

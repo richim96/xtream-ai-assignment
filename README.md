@@ -1,6 +1,104 @@
 # xtream AI Challenge - Software Engineer
 
-## Context
+⬇️ Scroll to the end to read the assignment guidelines ⬇️
+
+## How to run
+![diamond](https://img.itch.zone/aW1hZ2UvMTEwMDA2OC82MzQ0MTg0LmdpZg==/794x1000/L%2Fyy05.gif)
+
+### Installation ⚙️
+This project is managed with [`PDM`](https://pdm-project.org/en/latest). If you don't have it yet, make sure to install it.
+MacOS users can rely on Homebrew - you can find the installation guide for other systems [here](https://pdm-project.org/en/latest/#installation).
+```bash
+brew install pdm
+```
+
+Next, install the necessary dependencies for the project.
+```bash
+pdm install
+```
+
+Now install **MongoDB** (Community Edition). Like before, you can use Homebrew on MacOS - for other systems, see this [guide](https://www.mongodb.com/docs/manual/administration/install-community/).
+```bash
+brew tap mongodb/brew
+```
+```bash
+brew install mongodb-community
+```
+
+### ML Pipeline 🤖
+Now you can launch the pipeline. Just run:
+```bash
+pdm run python scripts/run_ml_pipeline.py
+```
+This script starts a training cycle for **linear** and **gradient boosting** models. During each cycle, the following assets are created and stored: the processed datasets used for training, the various models, and a training log. A copy of the **best-performing** model is stored separately, for ease of access.
+
+
+All related assets are mapped via unique identifiers: the details can be retrieved from the training log, which is updated at each cycle.
+
+
+To simplify first-time usage, I included a ```.env``` file with minimal configurations. This ensures that the assets are saved in the correct place when you operate the tool locally. However, you can bypass these settings from the CLI (ideally, redirecting the assets externally):
+```bash
+pdm run python scripts/run_ml_pipeline.py --help
+```
+```
+usage: python run_ml_pipeline.py [-h] [-ds DATA_SOURCE] [-dd DATA_DEST] ...
+
+options:
+  -h, --help            show this help message and exit
+  -ds DATA_SOURCE, --data-source DATA_SOURCE
+                        Data source path.
+  -dd DATA_DEST, --data-dest DATA_DEST
+                        Data storage path.
+  -m MODEL_DEST, --model-dest MODEL_DEST
+                        Models storage path.
+  -s SOTA_DEST, --sota-dest SOTA_DEST
+                        SOTA model storage path.
+  -l LOG_DEST, --log-dest LOG_DEST
+                        Log storage path.
+  -n N_MODELS, --n-models N_MODELS
+                        Number of training attempts per model type.
+```
+
+### REST API & Database
+#### MongoDB 📊
+Before trying out the API, be sure to start a local MongoDB instance. The uvicorn server will need to connect to it.
+```bash
+brew services start mongodb-community
+```
+
+#### FastAPI ⚡️
+It's time to start the FastAPI uvicorn server and put to work the models we trained!
+```bash
+pdm run fastapi run src/xtream_service/api/diamond.py
+```
+
+Once you open your browser, navigate to the docs - if you aren't there yet, - and test to your heart's content.
+```
+http://127.0.0.1:8000/docs
+```
+All the requests/responses are stored in the MongoDB local instance. You can run ```mongosh``` in the shell to access it and check the result first-hand:
+- ```show dbs``` to list existing databases.
+- ```use diamond_db``` to access the database we created.
+- ```show collections``` to list the existing collections (database tables).
+- ```db.diamond_request.find().pretty()``` or ```db.diamond_response.find().pretty()``` to view the data.
+
+All actions are also logged in the shell while FastAPI is running.
+
+
+**P.S.** 🚨 If the uvicorn server triggers a security alert in your browser, please ignore it. This happens because the app is running on ```http``` (```https``` has not been configured). Alternatively, you can simply start the server using ```fastapi dev```.
+
+
+**P.P.S.** When you are done playing with the API, don't forget to put MongoDB to sleep 😴
+```bash
+brew services stop mongodb/brew/mongodb-community
+```
+
+Thanks for checking out this project 🤓
+
+-----
+-----
+
+## Assignment
 
 Marta, a data scientist at xtream, has been working on a project for a client, a large jewelry store. She's been doing a great job, but she has a lot on her plate. So, she asked you to help her out.
 
@@ -29,79 +127,3 @@ Your API should support two use cases:
 ### Challenge 4
 
 Observability is key. Save every request and response made to the APIs to a **proper database**.
-
----
-
-## How to run
-
-![diamond](https://img.itch.zone/aW1hZ2UvMTEwMDA2OC82MzQ0MTg0LmdpZg==/794x1000/L%2Fyy05.gif)
-
-### Installation guide
-This project is managed with [`PDM`](https://pdm-project.org/en/latest). If you don't have it yet, make sure to install it.
-
-- MacOS:
-```bash
-brew install pdm
-```
-
-- Linux (also works on Mac, alternatively to Homebrew):
-```bash
-curl -sSL https://pdm-project.org/install-pdm.py | python3 -
-```
-
-- Windows:
-```bash
-(Invoke-WebRequest -Uri https://pdm-project.org/install-pdm.py -UseBasicParsing).Content | py -
-```
-
-**Next**, install the necessary dependencies and you'll be good to go.
-```bash
-pdm install
-```
-
-### ML Pipeline
-Now you can launch the pipeline. Just run:
-```bash
-pdm run python scripts/run_ml_pipeline.py
-```
-This script starts a training cycle for **linear** and **gradient boosting** models. During each cycle, the following assets are created and stored: the processed datasets used for training, the various models, and a training log. A copy of the **best-performing** model is stored separately, for ease of access.
-
-
-All related assets are mapped via unique identifiers: the details can be retrieved from the training log, which is updated at each cycle.
-
-
-To simplify first-time usage, I included a ```.env``` file with minimal configurations. This ensures that the assets are saved in the correct place when you operate the tool locally. However, you can bypass it dynamically from the CLI (ideally, redirecting the assets to an external storage service):
-```bash
-pdm run python scripts/run_ml_pipeline.py --help
-```
-```
-usage: python run_ml_pipeline.py [-h] [-ds DATA_SOURCE] [-dd DATA_DEST] ...
-
-options:
-  -h, --help            show this help message and exit
-  -ds DATA_SOURCE, --data-source DATA_SOURCE
-                        Data source path.
-  -dd DATA_DEST, --data-dest DATA_DEST
-                        Data storage path.
-  -m MODEL_DEST, --model-dest MODEL_DEST
-                        Models storage path.
-  -s SOTA_DEST, --sota-dest SOTA_DEST
-                        SOTA model storage path.
-  -l LOG_DEST, --log-dest LOG_DEST
-                        Log storage path.
-  -n N_MODELS, --n-models N_MODELS
-                        Number of training attempts per model type.
-```
-
-### REST API
-It's time to start the FastAPI server and put to work the models we just trained!
-
-```bash
-pdm run fastapi run src/xtream_service/api/diamond_app.py
-```
-Once you open your local webpage, if you aren't there yet, navigate to the docs, and test to your heart's content.
-```
-http://127.0.0.1:8000/docs
-```
-If you get a security alert from your browser, please ignore it. This happens because the app is running on ```http``` (```https``` has not been configured).
-Alternatively, start the server using ```fastapi dev``` instead.

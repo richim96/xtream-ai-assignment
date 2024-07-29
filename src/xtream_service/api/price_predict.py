@@ -11,7 +11,7 @@ from fastapi import APIRouter
 
 from xtream_service.utils import uuid_get, utc_time_get
 from xtream_service.ml_pipeline import data_processing
-from xtream_service.db.put import request_db_put, response_db_put
+from xtream_service.db.data_put import request_db_put, response_db_put
 
 from xtream_service.api import LOGGER
 from xtream_service.api._const import NUMERIC, CATEGORICAL, LINEAR_TO_DROP, XGB_TO_CATG
@@ -47,7 +47,8 @@ async def diamond_price_predict(diamond_obj: Diamond) -> DiamondPriceResponse:
         diamond=diamond_obj,
         created_at=utc_time_get(),
     )
-    request_db_put(request)
+    await request_db_put(request)
+
     # Convert request data into a pandas dataframe and process query
     diamond_df: pd.DataFrame = pd.DataFrame(
         {col: [row] for col, row in diamond_obj.model_dump().items()}
@@ -63,7 +64,7 @@ async def diamond_price_predict(diamond_obj: Diamond) -> DiamondPriceResponse:
         source_model=MODEL_SOURCE,
         created_at=utc_time_get(),
     )
-    response_db_put(response)
+    await response_db_put(response)
     return response
 
 
@@ -82,6 +83,7 @@ async def price_predict(diamond_obj: pd.DataFrame) -> int:
     """
     # Prepare data for the model
     diamond_obj = data_processing.filter_numeric(diamond_obj, cols=NUMERIC, n=0)
+
     if "linear" in MODEL_SOURCE:
         diamond_obj = diamond_obj.drop(columns=LINEAR_TO_DROP)
         diamond_obj = data_processing.dummy_encode(diamond_obj, cols=CATEGORICAL)
@@ -94,4 +96,5 @@ async def price_predict(diamond_obj: pd.DataFrame) -> int:
 
     pred: float = model.predict(diamond_obj).item()
     pred = int(np.expm1(pred)) if "_log" in MODEL_SOURCE else int(pred)
+
     return pred

@@ -1,3 +1,9 @@
+## 0.8.0 (2024-07-29)
+
+### Feat
+
+- **db**: implement first iteration of noSQL database - MongoDB - to store api request and response data
+
 ## 0.7.1 (2024-07-29)
 
 ### Fix

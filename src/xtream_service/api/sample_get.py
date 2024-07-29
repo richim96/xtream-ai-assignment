@@ -7,7 +7,7 @@ from dotenv import load_dotenv, find_dotenv
 from fastapi import APIRouter
 
 from xtream_service.utils import uuid_get, utc_time_get
-from xtream_service.db.put import request_db_put, response_db_put
+from xtream_service.db.data_put import request_db_put, response_db_put
 
 from xtream_service.api import LOGGER
 from xtream_service.api._const import QUALITIES, CARAT
@@ -56,7 +56,7 @@ async def diamond_sample_get(
         n_samples=n_samples,
         created_at=utc_time_get(),
     )
-    request_db_put(request)
+    await request_db_put(request)
 
     # Convert data into a pandas dataframe and process query
     diamond_df: pd.DataFrame = pd.DataFrame([diamond_obj], index=[0])
@@ -73,7 +73,7 @@ async def diamond_sample_get(
         source_dataset=DATA_SOURCE,
         created_at=utc_time_get(),
     )
-    response_db_put(response)
+    await response_db_put(response)
     return response
 
 

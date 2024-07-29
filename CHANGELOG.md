@@ -1,3 +1,17 @@
+## 0.7.0 (2024-07-29)
+
+### Feat
+
+- **api**: implement first iteration of the api - price prediction and diamond sampling operational (performance possibly to fix)
+
+### Refactor
+
+- minor refactoring on code readability and added short guide to use the api
+- **ml_pipeline**: refactor codebase and tests organization
+- **ml_pipeline**: reduce code complexity and improve consistency and readability
+- **utils**: implement new utils in the codebase
+- **train.py,-README.md**: adjust description for CLI usage
+
 ## 0.6.2 (2024-07-28)
 
 ### Perf

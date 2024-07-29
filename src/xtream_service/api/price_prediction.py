@@ -24,8 +24,7 @@ price_router: APIRouter = APIRouter()
 
 @price_router.post("/price")
 async def diamond_price_predict(diamond_obj: Diamond) -> DiamondPriceResponse:
-    """Query the price of a diamond and request n similar samples from the
-    original dataset.
+    """Query the price of a given diamond.
 
     Parameters
     ----------

@@ -25,18 +25,18 @@ diamond_data: pd.DataFrame = pd.read_csv(data_source)
 sampling_router: APIRouter = APIRouter()
 
 
-@sampling_router.post("/samples")
+@sampling_router.get("/samples")
 async def diamond_samples_get(
     diamond_obj: Diamond, n_samples: int
 ) -> DiamondSampleResponse:
-    """Request n similar diamond samples from the original dataset.
+    """Request `n` similar diamond samples from the original dataset.
 
     Parameters
     ----------
     diamond_obj : Diamond
         The diamond data to process.
     n_samples : int,
-        Number of similar diamonds to retrieve from the original dataset.
+        Number of similar samples to retrieve.
 
     Return
     ----------
@@ -64,7 +64,7 @@ async def diamond_samples_get(
 
 
 def samples_get(diamond_obj: pd.DataFrame, n_samples: int) -> list[dict]:
-    """Get n samples of diamonds with similar qualities from the available data.
+    """Get `n` samples of diamonds with similar qualities from the available data.
 
     Parameters
     ----------

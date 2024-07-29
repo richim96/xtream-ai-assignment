@@ -1,4 +1,4 @@
-"""Logging module"""
+"""Logging module for xtreme services"""
 
 import logging
 

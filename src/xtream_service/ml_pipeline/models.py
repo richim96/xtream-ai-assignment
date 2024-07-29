@@ -1,10 +1,8 @@
-"""Module for serializing ML models."""
+"""Module for serializing ML models"""
 
 import pickle
 
 from abc import ABC
-from datetime import datetime, timezone
-from uuid import uuid4, UUID
 
 import numpy as np
 import pandas as pd
@@ -12,6 +10,7 @@ import pandas as pd
 from sklearn.metrics import r2_score, mean_absolute_error
 from xgboost import XGBRegressor
 
+from xtream_service.utils import uuid_get, utc_time_get
 from xtream_service.ml_pipeline import LOGGER
 from xtream_service.ml_pipeline.optimization import StdOptimizer
 
@@ -28,18 +27,18 @@ class BaseModel(ABC):
 
     Attributes
     ----------
-    uid : str
-        Model identifier. It updates at every training cycle.
+    id : str
+        Model identifier. It updates with every training.
     model
         Instance of the chosen model object.
-    data_uid : str
+    dataset_id : str
         Identifier of the training dataset used.
     metrics : dict[str, float] | None, default=None
         Model evaluation metrics.
     is_sota : bool, default=False
         Whether the model correspons to the state-of-the-art.
     created_at : str
-        Time of the object's creation. It updates at every training cycle.
+        Time of the object's creation. It updates with every training.
 
     Methods
     ----------
@@ -52,12 +51,12 @@ class BaseModel(ABC):
         Serialize model into a persistently stored pickle file.
     """
 
-    def __init__(self, model, data_uid: UUID):
+    def __init__(self, model, data_uid: str):
         # The model object identifier and timestamp will update each time the
         # actual model will get trained, for it will not be the same model.
-        self.uid: str = ""
+        self.id: str = ""
         self.model = model
-        self.data_uid: str = str(data_uid)
+        self.data_uid: str = data_uid
         self.metrics: dict[str, float] | None = None
         self.is_sota: bool = False
         self.created_at: str = ""
@@ -65,7 +64,7 @@ class BaseModel(ABC):
     def info(self) -> dict:
         """Create a collection of model info for logging."""
         return {
-            "model_uid": self.uid,
+            "model_uid": self.id,
             "data_uid": self.data_uid,
             "metrics": self.metrics,
             "is_sota": self.is_sota,
@@ -109,8 +108,8 @@ class BaseModel(ABC):
         storage_route : str
             Path for storing the serialized model.
         """
-        with open(f"{storage_path}{self.uid}.pkl", "wb") as f:
-            LOGGER.info("Model %s saved in persistent storage.", self.uid)
+        with open(f"{storage_path}{self.id}.pkl", "wb") as f:
+            LOGGER.info("Model %s saved in persistent storage.", self.id)
             pickle.dump(self.model, f)
 
 
@@ -126,18 +125,18 @@ class LinearRegressionModel(BaseModel):
 
     Attributes
     ----------
-    uid : str
-        Model identifier. It updates at every training cycle.
+    id : str
+        Model identifier. It updates with every training.
     model
         Instance of the chosen model object.
-    data_uid : str
+    dataset_id : str
         Identifier of the training dataset used.
     metrics : dict[str, float] | None, default=None
         Model evaluation metrics.
     is_sota : bool, default=False
         Whether the model correspons to the state-of-the-art.
     created_at : str
-        Time of the object's creation. It updates at every training cycle.
+        Time of the object's creation. It updates with every training.
 
     Methods
     ----------
@@ -166,16 +165,13 @@ class LinearRegressionModel(BaseModel):
         log_transform : bool, default=False
             If `True`, train the model applying a log tranformation on the target.
         """
-        self.uid = str(uuid4())
-        self.created_at = str(datetime.now(timezone.utc))
-        target: pd.Series = np.log1p(y_train) if log_transform else y_train
+        self.id = uuid_get() + ("_linear_log" if log_transform else "_linear")
+        self.created_at = utc_time_get()
 
+        target: pd.Series = np.log1p(y_train) if log_transform else y_train
         self.model.fit(x_train, target)
 
-        if log_transform:
-            LOGGER.info("Linear model %s trained with log transformation.", self.uid)
-        else:
-            LOGGER.info("Linear model %s trained", self.uid)
+        LOGGER.info("Linear model %s trained", self.id)
 
 
 class XgbRegressorModel(BaseModel):
@@ -185,7 +181,7 @@ class XgbRegressorModel(BaseModel):
     ----------
     model
         Instance of the chosen model object.
-    data_uid : str
+    dataset_id : str
         Identifier of the training dataset used.
     categorical : bool, default=True
             If `True`, it instructs to the regressor that the data is also categorical.
@@ -194,18 +190,18 @@ class XgbRegressorModel(BaseModel):
 
     Attributes
     ----------
-    uid : str
-        Model identifier. It updates at every training cycle.
+    id : str
+        Model identifier. It updates with every training.
     model
         Instance of the chosen model object.
-    data_uid : str
+    dataset_id : str
         Identifier of the training dataset used.
     metrics : dict[str, float] | None, default=None
         Model evaluation metrics.
     is_sota : bool, default=False
         Whether the model correspons to the state-of-the-art.
     created_at : str
-        Time of the object's creation. It updates at every training cycle.
+        Time of the object's creation. It updates with every training.
     optimizer : StdOptimizer, default=None
             Optimizer instance to fine tune the model's hyperparameters.
     categorical : bool, default=True
@@ -226,11 +222,13 @@ class XgbRegressorModel(BaseModel):
         Train a gradient boosting model. Hyperparameter optimization available.
     """
 
-    def __init__(self, model, data_uid: UUID, categorical: bool = True, seed: int = 42):
+    def __init__(
+        self, model, dataset_id: str, categorical: bool = True, seed: int = 42
+    ):
         self.optimizer: StdOptimizer | None = None
         self.categorical = categorical
         self.seed = seed
-        super().__init__(model, data_uid)
+        super().__init__(model, dataset_id)
 
     def train(self, x_train: pd.Series, y_train: pd.Series) -> None:
         """Train a gradient boosting model. Hyperparameter optimization available.
@@ -242,16 +240,18 @@ class XgbRegressorModel(BaseModel):
         y_train : pd.Seris
             Training series for the target variable.
         """
-        self.uid = str(uuid4())
-        self.created_at = str(datetime.now(timezone.utc))
+        self.id = uuid_get() + "_xgb"
+        self.created_at = utc_time_get()
 
+        # Fine-tune hyperparameters and re-instance XGB model
         if self.optimizer is not None:
-            LOGGER.info("Tuning hyperparameters for model %s...", self.uid)
+            self.id += "_hp"
             self.optimizer.optuna_study.optimize(
                 func=self.optimizer.std_objective_fn,
                 n_trials=self.optimizer.opt_n_trials,
                 show_progress_bar=True,
             )
+            LOGGER.info("Tuning hyperparameters for model %s...", self.id)
             self.model = XGBRegressor(
                 **self.optimizer.optuna_study.best_params,
                 enable_categorical=self.categorical,
@@ -259,4 +259,4 @@ class XgbRegressorModel(BaseModel):
             )
 
         self.model.fit(x_train, y_train)
-        LOGGER.info("Gradient boosting model %s trained.", self.uid)
+        LOGGER.info("Gradient boosting model %s trained.", self.id)

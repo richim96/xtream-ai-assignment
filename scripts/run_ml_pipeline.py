@@ -144,39 +144,37 @@ def gradient_boosting_train(
 if __name__ == "__main__":
     # ----- Run ML pipeline E2E ----- #
     args = cli_args_get()
-    data_source = args.data_source or os.getenv("DATA_SOURCE", "")
-    data_dest = args.data_dest or os.getenv("DATA_DEST", "")
-    model_dest = args.model_dest or os.getenv("MODEL_DEST", "")
-    sota_dest = args.sota_dest or os.getenv("SOTA_DEST", "")
-    log_dest = args.log_dest or os.getenv("LOG_DEST", "")
-    nbr_models = args.n_models if args.n_models is not None else 1
+    DATA_SOURCE = args.data_source or os.getenv("DATA_SOURCE", "")
+    DATA_DEST = args.data_dest or os.getenv("DATA_DEST", "")
+    MODEL_DEST = args.model_dest or os.getenv("MODEL_DEST", "")
+    SOTA_DEST = args.sota_dest or os.getenv("SOTA_DEST", "")
+    LOG_DEST = args.log_dest or os.getenv("LOG_DEST", "")
+    N_MODELS = args.n_models if args.n_models is not None else 1
 
     # Extract and clean data
-    df: pd.DataFrame = data_processing.extract_from_csv(data_source)
+    df: pd.DataFrame = data_processing.extract_from_csv(DATA_SOURCE)
     df = data_processing.filter_numeric(df, cols=NUMERIC, n=0)
-
     # Train models
-    model_objs: list = linear_models_train(df.copy(), data_dest, n_models=nbr_models)
-    model_objs += gradient_boosting_train(df.copy(), data_dest, n_models=nbr_models)
+    model_objs: list = linear_models_train(df.copy(), DATA_DEST, n_models=N_MODELS)
+    model_objs += gradient_boosting_train(df.copy(), DATA_DEST, n_models=N_MODELS)
 
     # Set SOTA and log training cycle
     try:
-        with open(log_dest, "r", encoding="utf-8") as f:
+        with open(LOG_DEST, "r", encoding="utf-8") as f:
             log: dict = json.load(f)
     except FileNotFoundError:
         log = {"log_id": uuid_get(), "data": [], "training_cycles": 0}
-        LOGGER.info("Log file not found at: (%s. New log created.", log_dest)
+        LOGGER.info("Log file not found at: (%s. New log created.", LOG_DEST)
 
     log = model_selection.sota_update(model_objs, log)
     log["data"] += [model.info() for model in model_objs]
     log["training_cycles"] += 1
     log["updated_at"] = utc_time_get()
-
-    with open(f"{log_dest}", "w", encoding="utf-8") as f:
+    with open(f"{LOG_DEST}", "w", encoding="utf-8") as f:
         json.dump(log, f, indent=4)
 
     # Serialize newly trained models
     for model in model_objs:
-        model.serialize(model_dest)
+        model.serialize(MODEL_DEST)
         if model.is_sota:
-            model.serialize(sota_dest + f"cycle_{log["training_cycles"]}_sota_")
+            model.serialize(SOTA_DEST + f"cycle_{log["training_cycles"]}_sota_")

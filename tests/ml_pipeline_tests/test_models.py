@@ -16,9 +16,7 @@ from xtream_service.ml_pipeline.const import (
 from xtream_service.ml_pipeline import data_processing, models
 from xtream_service.ml_pipeline.optimization import StdOptimizer
 
-DF: pd.DataFrame = data_processing.extract_from_csv(
-    "assets/data/raw/diamonds/diamonds.csv"
-)
+DF: pd.DataFrame = data_processing.extract_from_csv("assets/data/raw/diamonds.csv")
 DF = data_processing.filter_numeric(DF, NUMERIC, 0)
 
 

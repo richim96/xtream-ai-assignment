@@ -6,9 +6,7 @@ from pydantic import BaseModel
 class Diamond(BaseModel):
     """Diamond base object model for the API."""
 
-    # Weight
     carat: float
-    # Attributes
     cut: str
     color: str
     clarity: str
@@ -21,6 +19,12 @@ class Diamond(BaseModel):
     z: float
 
 
+class DiamondPriceRequest(BaseModel):
+    """Request model for the diamonds price prediction api."""
+
+    diamond: Diamond
+
+
 class DiamondPriceResponse(BaseModel):
     """Response model for the diamonds price prediction api."""
 
@@ -28,14 +32,14 @@ class DiamondPriceResponse(BaseModel):
     predicted_price: int
     model: str
     source_model: str
-    request: Diamond
+    request_data: DiamondPriceRequest
     created_at: str
 
 
 class DiamondSampleRequest(BaseModel):
-    """Request model for the diamonds api."""
+    """Request model for the diamonds sampling api."""
 
-    diamond: Diamond
+    diamond: dict[str, float | str]
     n_samples: int
 
 
@@ -43,8 +47,9 @@ class DiamondSampleResponse(BaseModel):
     """Response model for the diamond sampling api."""
 
     response_id: str
-    dataset_samples: list[dict]
+    n_samples: int
+    samples: list[dict]
     dataset: str
     source_dataset: str
-    request: DiamondSampleRequest
+    request_data: DiamondSampleRequest
     created_at: str

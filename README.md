@@ -97,7 +97,7 @@ options:
 It's time to start the FastAPI server and put to work the models we just trained!
 
 ```bash
-pdm run fastapi run src/xtream_service/api/app.py
+pdm run fastapi run src/xtream_service/api/diamond_app.py
 ```
 Once you open your local webpage, if you aren't there yet, navigate to the docs, and test to your heart's content.
 ```

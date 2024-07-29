@@ -2,6 +2,8 @@
 
 import os
 import pickle
+
+import numpy as np
 import pandas as pd
 
 from dotenv import load_dotenv, find_dotenv
@@ -13,17 +15,20 @@ from xtream_service.db.put import response_db_put
 
 from xtream_service.api import LOGGER
 from xtream_service.api.const import NUMERIC, CATEGORICAL, LINEAR_TO_DROP, XGB_TO_CATG
-from xtream_service.api.models import Diamond, DiamondPriceResponse
-
+from xtream_service.api.pydantic_models import (
+    Diamond,
+    DiamondPriceRequest,
+    DiamondPriceResponse,
+)
 
 load_dotenv(find_dotenv())
-model_source: str = os.getenv("SOTA_SOURCE", "")
+MODEL_SOURCE: str = os.getenv("SOTA_SOURCE", "")
 
 price_router: APIRouter = APIRouter()
 
 
 @price_router.post("/price")
-async def diamond_price_predict(diamond_obj: Diamond) -> DiamondPriceResponse:
+def diamond_price_predict(diamond_obj: Diamond) -> DiamondPriceResponse:
     """Query the price of a given diamond.
 
     Parameters
@@ -36,7 +41,7 @@ async def diamond_price_predict(diamond_obj: Diamond) -> DiamondPriceResponse:
     DiamondPriceResponse
         The response with the price prediction.
     """
-    # Convert request data into a pandas dataframe to process the queries
+    # Convert request data into a pandas dataframe to process the query
     diamond_df: pd.DataFrame = pd.DataFrame(
         {col: [row] for col, row in diamond_obj.model_dump().items()}
     )
@@ -46,9 +51,9 @@ async def diamond_price_predict(diamond_obj: Diamond) -> DiamondPriceResponse:
     response: DiamondPriceResponse = DiamondPriceResponse(
         response_id=uuid_get(),
         predicted_price=price,
-        model=model_source.split("/")[-1],  # name of the model
-        source_model=model_source,
-        request=diamond_obj,
+        model=MODEL_SOURCE.split("/")[-1],  # name of the model
+        source_model=MODEL_SOURCE,
+        request_data=DiamondPriceRequest(diamond=diamond_obj),
         created_at=utc_time_get(),
     )
     response_db_put(response)
@@ -68,16 +73,18 @@ def price_predict(diamond_obj: pd.DataFrame) -> int:
     int
         The predicted price of the diamond.
     """
-    # Prepare data appropriately for the model
+    # Prepare data for the model
     diamond_obj = data_processing.filter_numeric(diamond_obj, cols=NUMERIC, n=0)
-    if "linear" in model_source:
+    if "linear" in MODEL_SOURCE:
         diamond_obj = diamond_obj.drop(columns=LINEAR_TO_DROP)
         diamond_obj = data_processing.dummy_encode(diamond_obj, cols=CATEGORICAL)
-    elif "xgb" in model_source:
+    elif "xgb" in MODEL_SOURCE:
         diamond_obj = data_processing.to_categorical_dtype(diamond_obj, XGB_TO_CATG)
 
-    # Load model from source
-    with open(model_source, "rb") as file:
-        model = pickle.load(file)
+    # Load model from source and predict price
+    with open(MODEL_SOURCE, "rb") as obj:
+        model = pickle.load(obj)
 
-    return int(model.predict(diamond_obj))
+    pred: float = model.predict(diamond_obj)
+    pred = int(np.expm1(pred)) if "_log" in MODEL_SOURCE else int(pred)
+    return pred

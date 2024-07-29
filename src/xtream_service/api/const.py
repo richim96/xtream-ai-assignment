@@ -10,5 +10,5 @@ XGB_TO_CATG: dict[str, list[str]] = {
     "clarity": ["IF", "VVS1", "VVS2", "VS1", "VS2", "SI1", "SI2", "I1"],
 }
 
-ATTRIBUTES: list[str] = ["cut", "color", "clarity"]
-WEIGHT: str = "carat"
+QUALITIES: list[str] = ["cut", "color", "clarity"]
+CARAT: str = "carat"

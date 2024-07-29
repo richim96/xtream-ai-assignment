@@ -15,7 +15,7 @@ from xtream_service.ml_pipeline.data_processing import (
     train_test_data_get,
 )
 
-DF: pd.DataFrame = extract_from_csv("assets/data/raw/diamonds/diamonds.csv")
+DF: pd.DataFrame = extract_from_csv("assets/data/raw/diamonds.csv")
 
 
 def test_filter_numeric() -> None:

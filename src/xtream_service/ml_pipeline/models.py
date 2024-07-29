@@ -246,12 +246,12 @@ class XgbRegressorModel(BaseModel):
         # Fine-tune hyperparameters and re-instance XGB model
         if self.optimizer is not None:
             self.id += "_hp"
+            LOGGER.info("Tuning hyperparameters for model %s...", self.id)
             self.optimizer.optuna_study.optimize(
                 func=self.optimizer.std_objective_fn,
                 n_trials=self.optimizer.opt_n_trials,
                 show_progress_bar=True,
             )
-            LOGGER.info("Tuning hyperparameters for model %s...", self.id)
             self.model = XGBRegressor(
                 **self.optimizer.optuna_study.best_params,
                 enable_categorical=self.categorical,

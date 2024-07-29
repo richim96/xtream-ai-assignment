@@ -96,12 +96,12 @@ options:
 ### REST API
 It's time to start the FastAPI server and put to work the models we just trained!
 
-
-Let's run it in dev mode. This way, we won't need other tools to play with the endpoints.
 ```bash
-pdm run fastapi dev src/xtream_service/api/app.py
+pdm run fastapi run src/xtream_service/api/app.py
 ```
 Once you open your local webpage, if you aren't there yet, navigate to the docs, and test to your heart's content.
 ```
 http://127.0.0.1:8000/docs
 ```
+If you get a security alert from your browser, please ignore it. This happens because the app is running on ```http``` (```https``` has not been configured).
+Alternatively, start the server using ```fastapi dev``` instead.

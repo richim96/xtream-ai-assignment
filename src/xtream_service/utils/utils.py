@@ -1,4 +1,4 @@
-"""Utilities for xtream services."""
+"""Utilities for xtream services"""
 
 from datetime import datetime, timezone
 from uuid import uuid4

@@ -7,7 +7,7 @@ from dotenv import load_dotenv, find_dotenv
 from fastapi import APIRouter
 
 from xtream_service.utils import uuid_get, utc_time_get
-from xtream_service.db.put import response_db_put
+from xtream_service.db.put import request_db_put, response_db_put
 
 from xtream_service.api import LOGGER
 from xtream_service.api.const import QUALITIES, CARAT
@@ -23,7 +23,7 @@ sampling_router: APIRouter = APIRouter()
 
 
 @sampling_router.get("/samples")
-async def diamond_samples_get(
+async def diamond_sample_get(
     carat: float, cut: str, color: str, clarity: str, n_samples: int
 ) -> DiamondSampleResponse:
     """Request `n` similar diamond samples from the original dataset, according
@@ -47,26 +47,30 @@ async def diamond_samples_get(
     DiamondSampleResponse
         The response containing the diamond samples.
     """
-    # Convert request data into a pandas dataframe to process the query
-    diamond_obj: dict[str, float | str] = {
-        "carat": carat,
-        "cut": cut,
-        "color": color,
-        "clarity": clarity,
-    }
-    diamond_df: pd.DataFrame = pd.DataFrame([diamond_obj], index=[0])
+    # Place request data in a dictionary and store the request
+    diamond_obj = {"carat": carat, "cut": cut, "color": color, "clarity": clarity}
+    request: DiamondSampleRequest = DiamondSampleRequest(
+        id=uuid_get(),
+        response_id=uuid_get(),
+        diamond=diamond_obj,
+        n_samples=n_samples,
+        created_at=utc_time_get(),
+    )
+    request_db_put(request)
 
+    # Convert data into a pandas dataframe and process query
+    diamond_df: pd.DataFrame = pd.DataFrame([diamond_obj], index=[0])
     n_samples = max(n_samples, 0)  # n_samples must be >= 0
     samples: list[dict] = await samples_get(diamond_df, n_samples)
     LOGGER.info("Retrieved %s samples from: %s", len(samples), DATA_SOURCE)
 
     response: DiamondSampleResponse = DiamondSampleResponse(
-        response_id=uuid_get(),
+        id=request.response_id,
+        request_id=request.id,
         n_samples=len(samples),
         samples=samples,
         dataset=DATA_SOURCE.split("/")[-1],  # name of the dataset
         source_dataset=DATA_SOURCE,
-        request_data=DiamondSampleRequest(diamond=diamond_obj, n_samples=n_samples),
         created_at=utc_time_get(),
     )
     response_db_put(response)
@@ -74,7 +78,8 @@ async def diamond_samples_get(
 
 
 async def samples_get(diamond_obj: pd.DataFrame, n_samples: int) -> list[dict]:
-    """Retrieve `n` diamonds with similar qualities from the available data.
+    """Retrieve `n` diamonds with the same qualities and similar weight (carat)
+    from the available data. A carat difference > 0.1 is considered significant.
 
     Parameters
     ----------
@@ -92,7 +97,7 @@ async def samples_get(diamond_obj: pd.DataFrame, n_samples: int) -> list[dict]:
 
     # Masks to match all dataset entries to the requested values
     is_equal = (diamond_data[QUALITIES] == diamond_obj.loc[0, QUALITIES]).all(axis=1)
-    carat_diff = (diamond_data[CARAT] - diamond_obj.loc[0, CARAT]).abs() <= 0.11
+    carat_diff = (diamond_data[CARAT] - diamond_obj.loc[0, CARAT]).abs() <= 0.1
 
     matching_entries: pd.DataFrame = diamond_data[is_equal & carat_diff]
     samples = matching_entries.sample(min(n_samples, len(matching_entries)))

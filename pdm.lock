@@ -5,7 +5,7 @@
 groups = ["default"]
 strategy = ["inherit_metadata"]
 lock_version = "4.5.0"
-content_hash = "sha256:164b255b7ac4aceae2f7596b1ed82ccb1312930e5202a12fade7b1516333b8e2"
+content_hash = "sha256:c10b9ece10e591b3d21b6525ccb66f08abfd642ae45cc5323444d793106b45e3"
 
 [[metadata.targets]]
 requires_python = ">=3.12"
@@ -1098,6 +1098,21 @@ groups = ["default"]
 files = [
     {file = "tzdata-2024.1-py2.py3-none-any.whl", hash = "sha256:9068bc196136463f5245e51efda838afa15aaeca9903f49050dfa2679db4d252"},
     {file = "tzdata-2024.1.tar.gz", hash = "sha256:2674120f8d891909751c38abcdfd386ac0a5a1127954fbc332af6b5ceae07efd"},
+]
+
+[[package]]
+name = "tzlocal"
+version = "5.2"
+requires_python = ">=3.8"
+summary = "tzinfo object for the local timezone"
+groups = ["default"]
+dependencies = [
+    "backports-zoneinfo; python_version < \"3.9\"",
+    "tzdata; platform_system == \"Windows\"",
+]
+files = [
+    {file = "tzlocal-5.2-py3-none-any.whl", hash = "sha256:49816ef2fe65ea8ac19d19aa7a1ae0551c834303d5014c6d5a62e4cbda8047b8"},
+    {file = "tzlocal-5.2.tar.gz", hash = "sha256:8d399205578f1a9342816409cc1e46a93ebd5755e39ea2d85334bea911bf0e6e"},
 ]
 
 [[package]]

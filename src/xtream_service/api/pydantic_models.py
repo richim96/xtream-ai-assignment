@@ -22,34 +22,44 @@ class Diamond(BaseModel):
 class DiamondPriceRequest(BaseModel):
     """Request model for the diamonds price prediction api."""
 
+    id: str
+    response_id: str
     diamond: Diamond
+    request_type: str = "price_predict"
+    created_at: str
 
 
 class DiamondPriceResponse(BaseModel):
     """Response model for the diamonds price prediction api."""
 
-    response_id: str
+    id: str
+    request_id: str
     predicted_price: int
     model: str
     source_model: str
-    request_data: DiamondPriceRequest
+    response_type: str = "price_predict"
     created_at: str
 
 
 class DiamondSampleRequest(BaseModel):
     """Request model for the diamonds sampling api."""
 
-    diamond: dict[str, float | str]
+    id: str
+    response_id: str
+    diamond: dict
     n_samples: int
+    request_type: str = "sample_get"
+    created_at: str
 
 
 class DiamondSampleResponse(BaseModel):
     """Response model for the diamond sampling api."""
 
-    response_id: str
+    id: str
+    request_id: str
     n_samples: int
     samples: list[dict]
     dataset: str
     source_dataset: str
-    request_data: DiamondSampleRequest
+    response_type: str = "sample_get"
     created_at: str

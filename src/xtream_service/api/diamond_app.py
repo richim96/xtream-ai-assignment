@@ -2,8 +2,8 @@
 
 from fastapi import FastAPI
 
-from xtream_service.api.price_prediction import price_router
-from xtream_service.api.sampling import sampling_router
+from xtream_service.api.price_predict import price_router
+from xtream_service.api.sample_get import sampling_router
 
 
 app: FastAPI = FastAPI(

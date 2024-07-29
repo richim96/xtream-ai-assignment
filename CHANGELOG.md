@@ -1,3 +1,14 @@
+## 0.7.1 (2024-07-29)
+
+### Fix
+
+- **api**: improve request/response structure for db storage
+- **api**: fix issue with diamond sampling api, improve docs
+
+### Refactor
+
+- minor refactoring to docstrings and http method used in sampling
+
 ## 0.7.0 (2024-07-29)
 
 ### Feat

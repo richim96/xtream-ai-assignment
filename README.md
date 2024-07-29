@@ -33,30 +33,26 @@ Observability is key. Save every request and response made to the APIs to a **pr
 ---
 
 ## How to run
-
 ![diamond](https://img.itch.zone/aW1hZ2UvMTEwMDA2OC82MzQ0MTg0LmdpZg==/794x1000/L%2Fyy05.gif)
 
-### Installation guide
+### Installation
 This project is managed with [`PDM`](https://pdm-project.org/en/latest). If you don't have it yet, make sure to install it.
-
-- MacOS:
+MacOS users can rely on Homebrew - you can find the installation guide for other systems [here](https://pdm-project.org/en/latest/#installation).
 ```bash
 brew install pdm
 ```
 
-- Linux (also works on Mac, alternatively to Homebrew):
-```bash
-curl -sSL https://pdm-project.org/install-pdm.py | python3 -
-```
-
-- Windows:
-```bash
-(Invoke-WebRequest -Uri https://pdm-project.org/install-pdm.py -UseBasicParsing).Content | py -
-```
-
-**Next**, install the necessary dependencies and you'll be good to go.
+Next, install the necessary dependencies for the project.
 ```bash
 pdm install
+```
+
+Now install **MongoDB** (Community Edition). Like before, you can use Homebrew on MacOS - for other systems, check out this [guide](https://www.mongodb.com/docs/manual/administration/install-community/).
+```bash
+brew tap mongodb/brew
+```
+```bash
+brew install mongodb-community
 ```
 
 ### ML Pipeline
@@ -70,7 +66,7 @@ This script starts a training cycle for **linear** and **gradient boosting** mod
 All related assets are mapped via unique identifiers: the details can be retrieved from the training log, which is updated at each cycle.
 
 
-To simplify first-time usage, I included a ```.env``` file with minimal configurations. This ensures that the assets are saved in the correct place when you operate the tool locally. However, you can bypass it dynamically from the CLI (ideally, redirecting the assets to an external storage service):
+To simplify first-time usage, I included a ```.env``` file with minimal configurations. This ensures that the assets are saved in the correct place when you operate the tool locally. However, you can bypass these settings from the CLI (ideally, redirecting the assets externally):
 ```bash
 pdm run python scripts/run_ml_pipeline.py --help
 ```
@@ -93,15 +89,38 @@ options:
                         Number of training attempts per model type.
 ```
 
-### REST API
-It's time to start the FastAPI server and put to work the models we just trained!
-
+### REST API & Database
+#### MongoDB
+Before trying out the api, be sure to start a local MongoDB instance. The uvicorn server will need to connect to it.
 ```bash
-pdm run fastapi run src/xtream_service/api/diamond_app.py
+brew services start mongodb-community
 ```
-Once you open your local webpage, if you aren't there yet, navigate to the docs, and test to your heart's content.
+
+#### FastAPI
+It's time to start the FastAPI uvicorn server and put to work the models we trained!
+```bash
+pdm run fastapi run src/xtream_service/api/diamond.py
+```
+
+Once you open your local webpage,  navigate to the docs - if you aren't there yet, - and test to your heart's content.
 ```
 http://127.0.0.1:8000/docs
 ```
-If you get a security alert from your browser, please ignore it. This happens because the app is running on ```http``` (```https``` has not been configured).
-Alternatively, start the server using ```fastapi dev``` instead.
+All the requests/responses are stored in your MongoDB local instance. You can run ```mongosh``` in the shell to access it and check the results:
+- ```show dbs``` to list existing databases.
+- ```use diamond_db``` to access the database we created.
+- ```show collections``` to list the existing collections (database tables).
+- ```db.diamond_request.find().pretty()``` or ```db.diamond_response.find().pretty()``` to view data.
+If you get stuck, ```exit``` is the command you are looking for :).
+
+
+All actions are also logged in the shell while FastAPI is running.
+
+
+**P.S.** If the uvicorn server triggers a security alert in your browser, please ignore it. This happens because the app is running on ```http``` (```https``` has not been configured). Alternatively, you can simply start the server using ```fastapi dev```.
+
+
+**P.P.S.** When you are done having fun, don't forget to put MongoDB to sleep.
+```bash
+brew services stop mongodb/brew/mongodb-community
+```

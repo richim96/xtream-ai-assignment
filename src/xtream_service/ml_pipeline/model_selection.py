@@ -17,7 +17,7 @@ def sota_update(models: list, log: dict) -> dict:
         The log file with updated information about the SOTA, if any.
     """
     sota = models[0]
-    # Find SOTA in the current batch
+    # Find SOTA in the current batch - smaller MAE and R2 closer to 1
     for model in models[1:]:
         if (
             model.metrics["mean_absolute_error"] < sota.metrics["mean_absolute_error"]

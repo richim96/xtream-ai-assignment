@@ -10,7 +10,7 @@ from xtream_service.utils import uuid_get, utc_time_get
 from xtream_service.db.put import request_db_put, response_db_put
 
 from xtream_service.api import LOGGER
-from xtream_service.api.const import QUALITIES, CARAT
+from xtream_service.api._const import QUALITIES, CARAT
 from xtream_service.api.pydantic_models import (
     DiamondSampleRequest,
     DiamondSampleResponse,
@@ -22,12 +22,12 @@ DATA_SOURCE: str = os.getenv("DATA_SOURCE", "")
 sampling_router: APIRouter = APIRouter()
 
 
-@sampling_router.get("/samples")
+@sampling_router.get("/samples/", response_model=DiamondSampleResponse)
 async def diamond_sample_get(
     carat: float, cut: str, color: str, clarity: str, n_samples: int
 ) -> DiamondSampleResponse:
     """Request `n` similar diamond samples from the original dataset, according
-    to the specified characteristics. Async because loading data may be expensive.
+    to the specified characteristics.
 
     Parameters
     ----------

@@ -2,7 +2,7 @@
 
 import pandas as pd
 
-from xtream_service.ml_pipeline.const import (
+from xtream_service.ml_pipeline._const import (
     NUMERIC,
     CATEGORICAL,
     XGB_TO_CATG,

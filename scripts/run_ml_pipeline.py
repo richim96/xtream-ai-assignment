@@ -13,7 +13,7 @@ from sklearn.linear_model import LinearRegression
 from xgboost import XGBRegressor
 
 from xtream_service.utils import uuid_get, utc_time_get
-from xtream_service.ml_pipeline.const import (
+from xtream_service.ml_pipeline._const import (
     NUMERIC,
     CATEGORICAL,
     LINEAR_TO_DROP,

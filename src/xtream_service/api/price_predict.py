@@ -14,7 +14,7 @@ from xtream_service.ml_pipeline import data_processing
 from xtream_service.db.put import request_db_put, response_db_put
 
 from xtream_service.api import LOGGER
-from xtream_service.api.const import NUMERIC, CATEGORICAL, LINEAR_TO_DROP, XGB_TO_CATG
+from xtream_service.api._const import NUMERIC, CATEGORICAL, LINEAR_TO_DROP, XGB_TO_CATG
 from xtream_service.api.pydantic_models import (
     Diamond,
     DiamondPriceRequest,
@@ -27,8 +27,8 @@ MODEL_SOURCE: str = os.getenv("SOTA_SOURCE", "")
 price_router: APIRouter = APIRouter()
 
 
-@price_router.post("/price")
-def diamond_price_predict(diamond_obj: Diamond) -> DiamondPriceResponse:
+@price_router.post("/price/", response_model=DiamondPriceResponse)
+async def diamond_price_predict(diamond_obj: Diamond) -> DiamondPriceResponse:
     """Query the price of a given diamond.
 
     Parameters
@@ -52,8 +52,8 @@ def diamond_price_predict(diamond_obj: Diamond) -> DiamondPriceResponse:
     diamond_df: pd.DataFrame = pd.DataFrame(
         {col: [row] for col, row in diamond_obj.model_dump().items()}
     )
-    price: int = price_predict(diamond_df)
-    LOGGER.info("Predicted a price of %s€ for diamond {%s}", price, diamond_df)
+    price: int = await price_predict(diamond_df)
+    LOGGER.info("Predicted a price of %s€ for diamond {%s}", price, diamond_obj)
 
     response: DiamondPriceResponse = DiamondPriceResponse(
         id=request.response_id,
@@ -67,7 +67,7 @@ def diamond_price_predict(diamond_obj: Diamond) -> DiamondPriceResponse:
     return response
 
 
-def price_predict(diamond_obj: pd.DataFrame) -> int:
+async def price_predict(diamond_obj: pd.DataFrame) -> int:
     """Prepare input data for the appropriate model.
 
     Parameters
@@ -92,6 +92,6 @@ def price_predict(diamond_obj: pd.DataFrame) -> int:
     with open(MODEL_SOURCE, "rb") as obj:
         model = pickle.load(obj)
 
-    pred: float = model.predict(diamond_obj)
+    pred: float = model.predict(diamond_obj).item()
     pred = int(np.expm1(pred)) if "_log" in MODEL_SOURCE else int(pred)
     return pred

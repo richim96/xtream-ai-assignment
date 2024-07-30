@@ -1,7 +1,7 @@
 # Temporary assets
 /assets/data/processed/
 /assets/models/
-/assets/sota/
+#/assets/sota/
 /assets/logs/
 
 

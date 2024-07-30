@@ -164,7 +164,7 @@ if __name__ == "__main__":
             log: dict = json.load(f)
     except FileNotFoundError:
         log = {"log_id": uuid_get(), "data": [], "training_cycles": 0}
-        LOGGER.info("Log file not found at: (%s. New log created.", LOG_DEST)
+        LOGGER.info("Log file not found at: %s. New log created.", LOG_DEST)
 
     log = model_selection.sota_update(model_objs, log)
     log["data"] += [model.info() for model in model_objs]

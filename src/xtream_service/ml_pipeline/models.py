@@ -109,7 +109,7 @@ class BaseModel(ABC):
             Path for storing the serialized model.
         """
         with open(f"{storage_path}{self.id}.pkl", "wb") as f:
-            LOGGER.info("Model %s saved in persistent storage.", self.id)
+            LOGGER.info("Model %s saved to persistent storage.", self.id)
             pickle.dump(self.model, f)
 
 

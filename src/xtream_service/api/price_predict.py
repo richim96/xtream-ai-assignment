@@ -7,7 +7,7 @@ import numpy as np
 import pandas as pd
 
 from dotenv import load_dotenv, find_dotenv
-from fastapi import APIRouter
+from fastapi import APIRouter, BackgroundTasks
 
 from xtream_service.utils import uuid_get, utc_time_get
 from xtream_service.ml_pipeline import data_processing
@@ -28,7 +28,9 @@ price_router: APIRouter = APIRouter()
 
 
 @price_router.post("/price/", response_model=DiamondPriceResponse)
-async def diamond_price_predict(diamond_obj: Diamond) -> DiamondPriceResponse:
+async def diamond_price_predict(
+    diamond_obj: Diamond, background_tasks: BackgroundTasks
+) -> DiamondPriceResponse:
     """Query the price of a given diamond.
 
     Parameters
@@ -47,7 +49,7 @@ async def diamond_price_predict(diamond_obj: Diamond) -> DiamondPriceResponse:
         diamond=diamond_obj,
         created_at=utc_time_get(),
     )
-    await request_db_put(request)
+    background_tasks.add_task(request_db_put, request)
 
     # Convert request data into a pandas dataframe and process query
     diamond_df: pd.DataFrame = pd.DataFrame(
@@ -64,7 +66,7 @@ async def diamond_price_predict(diamond_obj: Diamond) -> DiamondPriceResponse:
         source_model=MODEL_SOURCE,
         created_at=utc_time_get(),
     )
-    await response_db_put(response)
+    background_tasks.add_task(response_db_put, response)
     return response
 
 

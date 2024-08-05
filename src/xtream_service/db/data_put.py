@@ -5,6 +5,8 @@ import pymongo
 
 from dotenv import load_dotenv, find_dotenv
 
+# from motor.motor_asyncio import AsyncIOMotorClient
+
 from xtream_service.db import LOGGER
 from xtream_service.api.pydantic_models import (
     DiamondPriceRequest,
@@ -17,7 +19,8 @@ load_dotenv(find_dotenv())
 MONGO_HOST: str = os.getenv("MONGO_HOST", "mongodb://localhost:27017")
 
 
-async def request_db_put(request: DiamondPriceRequest | DiamondSampleRequest) -> None:
+# async
+def request_db_put(request: DiamondPriceRequest | DiamondSampleRequest) -> None:
     """Save the api request to the db.
 
     Parameters
@@ -26,11 +29,10 @@ async def request_db_put(request: DiamondPriceRequest | DiamondSampleRequest) ->
         API request body.
     """
     try:
+        # client: AsyncIOMotorClient = AsyncIOMotorClient(MONGO_HOST)
         with pymongo.MongoClient(MONGO_HOST) as client:  # type: pymongo.MongoClient
-            # Create or select the database and the collection
             database = client["diamond_db"]
             diamond_request_collection = database["diamond_request"]
-            # Insert the new request
             diamond_request_collection.insert_one(request.model_dump())
 
         LOGGER.info("Request saved to MongoDB database: {%s}", request)
@@ -43,7 +45,8 @@ async def request_db_put(request: DiamondPriceRequest | DiamondSampleRequest) ->
         LOGGER.error("Request not saved. MongoDB threw an unexpected error: %s", e)
 
 
-async def response_db_put(
+# async
+def response_db_put(
     response: DiamondPriceResponse | DiamondSampleResponse,
 ) -> None:
     """Save the api response to the db.
@@ -54,11 +57,10 @@ async def response_db_put(
         API reponse body.
     """
     try:
+        # client: AsyncIOMotorClient = AsyncIOMotorClient(MONGO_HOST)
         with pymongo.MongoClient(MONGO_HOST) as client:  # type: pymongo.MongoClient
-            # Create or select the database and the collection
             database = client["diamond_db"]
             diamond_response_collection = database["diamond_response"]
-            # Insert the new request
             diamond_response_collection.insert_one(response.model_dump())
 
         LOGGER.info("Response saved to MongoDB database: {%s}", response)

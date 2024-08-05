@@ -4,7 +4,7 @@ import os
 import pandas as pd
 
 from dotenv import load_dotenv, find_dotenv
-from fastapi import APIRouter
+from fastapi import APIRouter, BackgroundTasks
 
 from xtream_service.utils import uuid_get, utc_time_get
 from xtream_service.db.data_put import request_db_put, response_db_put
@@ -24,7 +24,12 @@ sampling_router: APIRouter = APIRouter()
 
 @sampling_router.get("/samples/", response_model=DiamondSampleResponse)
 async def diamond_sample_get(
-    carat: float, cut: str, color: str, clarity: str, n_samples: int
+    carat: float,
+    cut: str,
+    color: str,
+    clarity: str,
+    n_samples: int,
+    background_tasks: BackgroundTasks,
 ) -> DiamondSampleResponse:
     """Request `n` similar diamond samples from the original dataset, according
     to the specified characteristics.
@@ -56,7 +61,7 @@ async def diamond_sample_get(
         n_samples=n_samples,
         created_at=utc_time_get(),
     )
-    await request_db_put(request)
+    background_tasks.add_task(request_db_put, request)
 
     # Convert data into a pandas dataframe and process query
     diamond_df: pd.DataFrame = pd.DataFrame([diamond_obj], index=[0])
@@ -73,7 +78,7 @@ async def diamond_sample_get(
         source_dataset=DATA_SOURCE,
         created_at=utc_time_get(),
     )
-    await response_db_put(response)
+    background_tasks.add_task(response_db_put, response)
     return response
 
 
